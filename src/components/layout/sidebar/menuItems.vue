@@ -13,7 +13,7 @@
         <el-sub-menu v-if="i.children" :key="i.label" :index="i.name || i.key">
             <template #title>
                 <div class="block w-4 h-4 mr-2 overflow-hidden">
-                    <i v-if="i.icon" class="block w-4 h-4 mr-2" :class="i.icon"></i>
+                    <i v-if="i.icon" class="w-4 h-4 mr-2" :class="i.icon"></i>
                 </div>
                 {{ i.label }}
             </template>
@@ -21,7 +21,7 @@
         </el-sub-menu>
         <el-menu-item v-else :index="i.name || i.key" @click="go(i)">
             <div class="block w-4 h-4 mr-2 overflow-hidden">
-                <i v-if="i.icon" class="block w-4 h-4 mr-2" :class="i.icon"></i>
+                <i v-if="i.icon" class="w-4 h-4 mr-2" :class="i.icon"></i>
             </div>
             {{ i.label }}
         </el-menu-item>

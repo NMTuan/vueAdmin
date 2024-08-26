@@ -133,11 +133,13 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     const userStore = useUserStore()
+    const tabsStore = useTabsStore()
     if (['login', '404'].includes(to.name)) {
         next()
         return
     }
     await userStore
+    // TODO 这里的 checkUserInfo 只需要在页面首次打开执行.
         .checkUserInfo()
         .then((status) => {
             if (!status) {
@@ -155,6 +157,7 @@ router.beforeEach(async (to, from, next) => {
                 if (!userStore.checkAuth(to.params.x.join('-'))) {
                     next({ name: '404' })
                 } else {
+                    tabsStore.add(to.params.x.join('-'), true)
                     next()
                 }
                 return
@@ -163,6 +166,7 @@ router.beforeEach(async (to, from, next) => {
             if (!userStore.checkAuth(to.name)) {
                 next({ name: '404' })
             } else {
+                tabsStore.add(to.name, true)
                 next()
             }
         })

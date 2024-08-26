@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     Blank: typeof import('./src/components/page/blank.vue')['default']
     DataTable: typeof import('./src/components/page/dataTable/index.vue')['default']
+    Header: typeof import('./src/components/layout/header/index.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     IconCommunity: typeof import('./src/components/icons/IconCommunity.vue')['default']
     IconDocumentation: typeof import('./src/components/icons/IconDocumentation.vue')['default']
@@ -22,6 +23,8 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./src/components/layout/sidebar/index.vue')['default']
+    Tabs: typeof import('./src/components/layout/tabs/index.vue')['default']
+    TabsItem: typeof import('./src/components/layout/tabs/tabsItem.vue')['default']
     TheWelcome: typeof import('./src/components/TheWelcome.vue')['default']
     WelcomeItem: typeof import('./src/components/WelcomeItem.vue')['default']
   }

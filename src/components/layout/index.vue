@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 19:59:47
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-26 16:32:45
+ * @LastEditTime: 2024-08-26 22:44:11
  * @FilePath: \vueAdmin\src\components\layout\index.vue
  * @Description: 
  * 
@@ -10,7 +10,7 @@
 -->
 <template>
     <div class="flex h-screen bg-zinc-100">
-        <div class="bg-white flex-shrink-0 w-280px shadow overflow-hidden">
+        <div class="bg-white flex-shrink-0 w-280px shadow overflow-hidden relative z-2">
             <Logo class="sticky top-0 z-1" />
             <el-scrollbar class="h-full">
                 <Sidebar />
@@ -18,10 +18,10 @@
             </el-scrollbar>
         </div>
         <div class="flex-1 flex-col overflow-y-auto">
-            <div class="bg-zinc-600 text-zinc-300 h-16 flex items-center sticky top-0 z-1">
-                header
-            </div>
-            <div class="text-center">
+            <Header class="h-16 sticky top-0 z-1" />
+            <Tabs class="h-10 overflow-hidden sticky top-16 z-1" />
+            <div class="text-center p-6">
+                <!-- <slot :key="key" /> -->
                 <slot />
                 <div v-for="i in 100">{{ i }}</div>
             </div>

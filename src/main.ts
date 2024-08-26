@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 16:41:12
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-26 12:20:02
+ * @LastEditTime: 2024-08-26 20:59:35
  * @FilePath: \vueAdmin\src\main.ts
  * @Description:
  *
@@ -14,7 +14,7 @@ import ElementPlus from 'element-plus'
 
 import 'element-plus/dist/index.css'
 import 'virtual:uno.css'
-import '@unocss/reset/tailwind.css'
+import '@unocss/reset/eric-meyer.css'
 
 import App from './App.vue'
 import router from './router'
