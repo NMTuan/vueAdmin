@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 16:41:12
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-25 21:58:17
+ * @LastEditTime: 2024-08-25 23:31:12
  * @FilePath: \vueAdmin\src\router\index.ts
  * @Description:
  *
@@ -133,7 +133,15 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
-  await userStore.checkUserInfo()
+  if (to.name === 'login') {
+    next()
+    return
+  }
+  const status = await userStore.checkUserInfo()
+  if (!status) {
+    next({ name: 'login' })
+    return
+  }
   if (to.name === '404') {
     next()
     return

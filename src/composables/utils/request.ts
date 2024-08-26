@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-06-18 15:56:57
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-25 21:08:39
+ * @LastEditTime: 2024-08-26 11:28:26
  * @FilePath: \vueAdmin\src\composables\utils\request.ts
  * @Description:
  *
@@ -41,11 +41,9 @@ axios.interceptors.request.use(
     // 为请求头添加token
     const useToken = config.headers.useToken ?? true
     if (useToken) {
-      let user = localStorage.getItem('user')
-      user = JSON.parse(user || {})
-      if (user && user.token) {
-        config.headers.Authorization = `Bearer ${user.token}`
-        return config
+      const token = localStorage.getItem('vueAdminToken')
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
       }
     }
     return config
@@ -59,9 +57,9 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => {
     // 如果返回信息有message, 则显示
-    if (response.data.message) {
+    if (response.data.message && !response.headers.mute) {
       ElMessage[response.data.code === 200 ? 'success' : 'error']({
-        message: response.data.message,
+        message: response.data.message
         // description: response.data.description || ''
       })
       // notification[response.data.code === 200 ? 'success' : 'error']({
@@ -72,7 +70,8 @@ axios.interceptors.response.use(
     return response
   },
   (error) => {
-    if (error.response) {
+    console.log('mute', error.response.headers.mute)
+    if (error.response && !error.response.headers.mute) {
       const err = errors[error.response.status]
       if (err) {
         ElMessage.error(err.message)
@@ -90,6 +89,7 @@ axios.interceptors.response.use(
 )
 
 const get = (path = '', params = {}, config = {}) => {
+  console.log('get', path, params, config)
   return new Promise((resolve, reject) => {
     axios({
       url: path,
