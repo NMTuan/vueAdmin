@@ -1,7 +1,5 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-  </div>
+  <Layout> this is aaa page wite Layout component </Layout>
 </template>
 
 <style>

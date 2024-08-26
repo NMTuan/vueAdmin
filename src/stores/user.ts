@@ -20,7 +20,7 @@ export const useUserStore = defineStore('user', () => {
 
   // {path, label, key, icon, children, component, actions}
   const menuFlat = computed(() => {
-    const flat = (arr: any, path: string = '') => {
+    const flat = (arr: any, name: string = '') => {
       if (
         Array.isArray(arr) ||
         (arr && typeof arr === 'object' && 'value' in arr && Array.isArray(arr.value))
@@ -29,10 +29,10 @@ export const useUserStore = defineStore('user', () => {
         return targetArr.reduce((acc, curr) => {
           const clone = JSON.parse(JSON.stringify(curr))
           delete clone.children
-          clone.path = path ? `${path}-${clone.key}` : clone.key
+          clone.name = name ? `${name}-${clone.key}` : clone.key
           acc.push(clone)
           if (curr.children) {
-            acc.push(...flat(curr.children, clone.path))
+            acc.push(...flat(curr.children, clone.name))
           }
           return acc
         }, [])
@@ -98,7 +98,7 @@ export const useUserStore = defineStore('user', () => {
       return true
     }
     console.log('menuFlat.value', path, menuFlat.value)
-    return menuFlat.value.some((item) => item.path === path)
+    return menuFlat.value.some((item) => item.name === path)
   }
   return {
     userInfo,
