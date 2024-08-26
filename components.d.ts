@@ -17,9 +17,13 @@ declare module 'vue' {
     IconSupport: typeof import('./src/components/icons/IconSupport.vue')['default']
     IconTooling: typeof import('./src/components/icons/IconTooling.vue')['default']
     Layout: typeof import('./src/components/layout/index.vue')['default']
+    Menuitem: typeof import('./src/components/layout/sidebar/menuitem.vue')['default']
+    MenuItem: typeof import('./src/components/layout/sidebar/menuItem.vue')['default']
+    MenuItems: typeof import('./src/components/layout/sidebar/menuItems.vue')['default']
     Page: typeof import('./src/components/page/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Sidebar: typeof import('./src/components/layout/sidebar/index.vue')['default']
     TheWelcome: typeof import('./src/components/TheWelcome.vue')['default']
     WelcomeItem: typeof import('./src/components/WelcomeItem.vue')['default']
   }

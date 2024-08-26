@@ -86,11 +86,10 @@ const customRoutes = [
     {
         path: '/:x*',
         name: 'x',
-        component: () => import('../views/x.vue'),
-        beforeEnter: (to, from, next) => {
-            console.log('命中 x 路由', to.paramss)
-            next()
-        }
+        component: () => import('../views/x.vue')
+        // beforeEnter: (to, from, next) => {
+        //     next()
+        // }
     },
     {
         path: '/404',
@@ -148,7 +147,6 @@ router.beforeEach(async (to, from, next) => {
             // 这里检查权限, 不足的跳走
             // x 的, 由动态参数判断
             if (to.name === 'x') {
-                console.log('to.params 111', to.params)
                 if (!Array.isArray(to.params.x)) {
                     to.params.x = ['index']
                     // next()
