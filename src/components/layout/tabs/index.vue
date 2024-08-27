@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-26 21:31:14
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-27 14:51:35
+ * @LastEditTime: 2024-08-27 15:30:38
  * @FilePath: \vueAdmin\src\components\layout\tabs\index.vue
  * @Description: 
  * 
@@ -14,11 +14,13 @@
             class="w-full mb-0"
             v-model="tabsStore.activeName"
             @tab-click="handleClick"
+            @tab-remove="handleRemove"
         >
             <el-tab-pane
-                v-for="item in tabsStore.tabs"
+                v-for="(item, index) in tabsStore.tabs"
                 :label="item.label"
                 :name="item.name"
+                :closable="item.name!=='index'"
             >
             </el-tab-pane>
         </el-tabs>
@@ -26,16 +28,14 @@
 </template>
 <script setup>
 const tabsStore = useTabsStore();
-const router = useRouter();
-const route = useRoute()
 
 const handleClick = (item) => {
     utils.go(item.paneName);
 };
 
-watch(route, (val)=>{
-   console.log('watch route', val) 
-})
+const handleRemove = (name) => {
+    tabsStore.remove(name);
+};
 
 </script>
 <style lang="scss" scoped>
