@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 16:41:12
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-26 15:39:17
+ * @LastEditTime: 2024-08-27 15:48:09
  * @FilePath: \vueAdmin\src\App.vue
  * @Description: 
  * 
@@ -13,14 +13,14 @@
 </template>
 
 <script setup lang="ts">
-const route = useRoute()
+const route = useRoute();
 // 确保同路由组件在切换页面时可重新渲染
 const key = computed(() => {
-    if (route.name === 'x') {
-        return route.params.x.join('-')
+    if (route.name === "x") {
+        return route.params.x.join("-");
     }
-    return route.name
-})
+    return route.name;
+});
 </script>
 
 <style scoped></style>
