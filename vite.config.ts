@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-26 19:52:34
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-26 20:13:53
+ * @LastEditTime: 2024-08-27 14:35:48
  * @FilePath: \vueAdmin\vite.config.ts
  * @Description:
  *
@@ -31,7 +31,7 @@ export default defineConfig({
                 },
                 //  'element-plus'
             ],
-            dirs: ["./src/stores", "./src/composables/**"],
+            dirs: ["./src/stores", "./src/composables"],
             dts: "src/auto-imports.d.ts",
         }),
         Components({

@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-26 14:40:54
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-26 16:19:16
+ * @LastEditTime: 2024-08-27 14:45:03
  * @FilePath: \vueAdmin\src\components\layout\sidebar\menuItems.vue
  * @Description: 
  * 
@@ -19,7 +19,7 @@
             </template>
             <MenuItems :children="i.children" />
         </el-sub-menu>
-        <el-menu-item v-else :index="i.name || i.key" @click="go(i)">
+        <el-menu-item v-else :index="i.name || i.key" @click="handleClick(i)">
             <div class="block w-4 h-4 mr-2 overflow-hidden">
                 <i v-if="i.icon" class="w-4 h-4 mr-2" :class="i.icon"></i>
             </div>
@@ -35,14 +35,7 @@ const props = defineProps({
         required: true
     }
 })
-const go = (item) => {
-    // 从router里找, 如果存在，则直接跳转
-    const exits = router.hasRoute(item.name)
-    if (exits) {
-        router.push({ name: item.name })
-        return
-    }
-    // 否则统一都跳转到 x
-    router.push({ name: 'x', params: { x: item.name.split('-') } })
+const handleClick = (item) => {
+    utils.go(item.name)
 }
 </script>
