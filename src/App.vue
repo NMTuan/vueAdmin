@@ -2,14 +2,18 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 16:41:12
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-27 15:48:09
+ * @LastEditTime: 2024-08-27 16:16:51
  * @FilePath: \vueAdmin\src\App.vue
  * @Description: 
  * 
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
 -->
 <template>
-    <router-view :key="key"></router-view>
+    <router-view v-slot="{ Component }">
+        <keep-alive> 
+            <component :is="Component" :key="key" />
+         </keep-alive>
+    </router-view>
 </template>
 
 <script setup lang="ts">
