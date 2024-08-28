@@ -2,9 +2,13 @@ import type { Res } from "@/composables/request";
 
 export const useUserStore = defineStore("user", () => {
     const router = useRouter();
-    const userInfo = ref({});
-    const id = ref(0);
-    const name = ref("");
+    const user = ref({
+        id: "",
+        name: "",
+        menu: [],
+        topbar: [],
+        notice: "",
+    });
     const token = ref("");
     if (localStorage.getItem("vueAdminToken")) {
         token.value = localStorage.getItem("vueAdminToken") as string;
@@ -15,10 +19,11 @@ export const useUserStore = defineStore("user", () => {
 
     // {label, key, icon, children, component, actions}
     const menu = computed(() => {
-        return userInfo.value.menu || [];
+        return user.value.menu || [];
     });
 
-    // {path, label, key, icon, children, component, actions}
+    // {path, name, 
+    // label, key, icon, children, component, actions}
     const menuFlat = computed(() => {
         const flat = (arr: any, name: string = "") => {
             if (
@@ -35,6 +40,7 @@ export const useUserStore = defineStore("user", () => {
                         const clone = JSON.parse(JSON.stringify(curr));
                         delete clone.children;
                         clone.name = name ? `${name}-${clone.key}` : clone.key;
+                        clone.path = `/${clone.name.replaceAll('-', '/')}`;
                         // 给原始 menu item 也增加 name, 方便查找
                         arr[index].name = clone.name;
                         acc.push(clone);
@@ -61,8 +67,6 @@ export const useUserStore = defineStore("user", () => {
         if (res.code !== 200) {
             return;
         }
-        id.value = res.data.user.id;
-        name.value = res.data.user.name;
         token.value = res.data.token;
         localStorage.setItem("vueAdminToken", token.value);
         if (token.value) {
@@ -80,6 +84,10 @@ export const useUserStore = defineStore("user", () => {
             return false;
         }
         return new Promise((resolve, reject) => {
+            if (user.value.id) {
+                resolve(true);
+                return;
+            }
             request
                 .get(
                     "/user/info",
@@ -91,11 +99,11 @@ export const useUserStore = defineStore("user", () => {
                     }
                 )
                 .then((res) => {
-                    userInfo.value = res.data;
-                    resolve(res);
+                    user.value = res.data;
+                    resolve(true);
                 })
                 .catch((err) => {
-                    reject(err);
+                    resolve(false);
                 });
         });
     };
@@ -108,7 +116,7 @@ export const useUserStore = defineStore("user", () => {
         return menuFlat.value.some((item: any) => item.name === path);
     };
     return {
-        userInfo,
+        user,
         menu,
         menuFlat,
         login,
