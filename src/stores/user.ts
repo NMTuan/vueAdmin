@@ -59,7 +59,7 @@ export const useUserStore = defineStore("user", () => {
 
     // 登录
     const login = async (formData: any) => {
-        const res = (await request.post("/user/login", formData, {
+        const res = (await request.post("/auth/login", formData, {
             headers: {
                 useToken: false,
             },
@@ -90,7 +90,7 @@ export const useUserStore = defineStore("user", () => {
             }
             request
                 .get(
-                    "/user/info",
+                    "/auth/info",
                     {},
                     {
                         headers: {
