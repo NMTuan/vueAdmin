@@ -1,18 +1,8 @@
 <!--
  * @Author: nmtuan nmtuan@qq.com
- * @Date: 2024-08-27 16:57:06
- * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-28 10:59:39
- * @FilePath: \vueAdmin\src\components\page\dataTable\index.vue
- * @Description: 
- * 
- * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
--->
-<!--
- * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 22:00:10
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-27 21:34:55
+ * @LastEditTime: 2024-08-28 15:15:13
  * @FilePath: \vueAdmin\src\components\page\dataTable\index.vue
  * @Description: 
  * 
@@ -20,6 +10,7 @@
 -->
 <template>
     <div class="border border-solid border-zinc-200 p-6 bg-white rounded">
+        <Action v-if="Object.keys(currentAction).length" v-model="currentAction" />
         <!-- 操作区域 -->
         <div
             v-if="actions.filter((i) => i.positions.includes('top')).length"
@@ -52,19 +43,23 @@
             <template v-for="column in columns">
                 <!-- 行操作项 -->
                 <el-table-column v-if="column.component === 'actions'">
-                    <el-button
-                        v-for="action in actions.filter((i) =>
-                            i.positions.includes('row')
-                        )"
-                        v-bind="action.props"
-                        size="small"
-                    >
-                        <template #icon v-if="action.icon">
-                            <i :class="action.icon"></i>
-                        </template>
-                        {{ action.label }}
-                    </el-button>
+                    <template #default="{ row }">
+                        <el-button
+                            v-for="action in actions.filter((i) =>
+                                i.positions.includes('row')
+                            )"
+                            v-bind="action.props"
+                            size="small"
+                            @click="clickAction(action, row)"
+                        >
+                            <template #icon v-if="action.icon">
+                                <i :class="action.icon"></i>
+                            </template>
+                            {{ action.label }}
+                        </el-button>
+                    </template>
                 </el-table-column>
+
                 <el-table-column
                     v-else
                     :label="column.label"
@@ -87,6 +82,7 @@
             @current-change="handlePageChange"
         >
         </el-pagination>
+        <pre>{{currentAction}}</pre>
     </div>
 </template>
 
@@ -100,6 +96,8 @@ const query = ref({
 const fetchData = ref({});
 // const selectedRow = ref({});
 const selectedRows = ref([]);
+provide("selectedRows", selectedRows);
+
 const rows = computed(() => {
     return fetchData.value.rows || [];
 });
@@ -126,6 +124,8 @@ const total = computed(() => {
 const actions = computed(() => {
     return pageConfig.value.actions || [];
 });
+const currentAction = ref({});
+provide('currentAction', currentAction)
 
 const fetch = async () => {
     const url = pageConfig.value.fetchUrl || pageConfig.value.path;
@@ -158,9 +158,15 @@ const handleSizeChange = (size) => {
     fetch();
 };
 
+
+const clickAction = (action, row)=>{
+    currentAction.value = action
+    currentAction.value.path = `${pageConfig.value.path}/${action.key}`
+    selectedRows.value = [row]
+}
+
 // 页面进入是否自动加载
 if (pageConfig.value.autoFetch !== "false") {
     fetch();
 }
-
 </script>

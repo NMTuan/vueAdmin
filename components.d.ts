@@ -7,6 +7,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Action: typeof import('./src/components/action/index.vue')['default']
+    ActionForm: typeof import('./src/components/action/actionForm.vue')['default']
+    ActionModal: typeof import('./src/components/action/actionModal.vue')['default']
     Blank: typeof import('./src/components/page/blank.vue')['default']
     DataTable: typeof import('./src/components/page/dataTable/index.vue')['default']
     Header: typeof import('./src/components/layout/header/index.vue')['default']
