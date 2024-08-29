@@ -70,7 +70,7 @@ const loading = ref(false);
 
 // 关闭 dialog 或者 slideover
 const actionBack = (refresh = false) => {
-    if(refresh){
+    if(refresh === true){
         fetchList();
     }
     emits("update:modelValue", {});

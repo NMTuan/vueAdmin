@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-28 11:50:50
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-29 21:42:30
+ * @LastEditTime: 2024-08-29 22:01:03
  * @FilePath: \vueAdmin\src\components\action\actionForm.vue
  * @Description: 
  * 
@@ -29,7 +29,7 @@
             <el-button :loading="loading" type="primary" @click="submit"
                 >提交</el-button
             >
-            <el-button text @click="actionBack">取消</el-button>
+            <el-button text @click="actionBack()">取消</el-button>
         </el-form-item>
     </el-form>
 </template>
