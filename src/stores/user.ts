@@ -22,7 +22,7 @@ export const useUserStore = defineStore("user", () => {
         return user.value.menu || [];
     });
 
-    // {path, name, 
+    // {path, name,
     // label, key, icon, children, component, actions}
     const menuFlat = computed(() => {
         const flat = (arr: any, name: string = "") => {
@@ -40,7 +40,7 @@ export const useUserStore = defineStore("user", () => {
                         const clone = JSON.parse(JSON.stringify(curr));
                         delete clone.children;
                         clone.name = name ? `${name}-${clone.key}` : clone.key;
-                        clone.path = `/${clone.name.replaceAll('-', '/')}`;
+                        clone.path = `/${clone.name.replaceAll("-", "/")}`;
                         // 给原始 menu item 也增加 name, 方便查找
                         arr[index].name = clone.name;
                         acc.push(clone);
@@ -71,7 +71,7 @@ export const useUserStore = defineStore("user", () => {
         localStorage.setItem("vueAdminToken", token.value);
         if (token.value) {
             const res = (await checkUserInfo(false)) as Res;
-            if (res.code !== 200) {
+            if (!res) {
                 return;
             }
             router.push("/");

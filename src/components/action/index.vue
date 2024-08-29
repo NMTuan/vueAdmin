@@ -1,7 +1,17 @@
+<!--
+ * @Author: nmtuan nmtuan@qq.com
+ * @Date: 2024-08-28 11:18:01
+ * @LastEditors: nmtuan nmtuan@qq.com
+ * @LastEditTime: 2024-08-29 16:11:12
+ * @FilePath: \vueAdmin\src\components\action\index.vue
+ * @Description: 
+ * 
+ * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
+-->
 <template>
     <div v-if="Object.keys(modelValue).length">
         <el-dialog
-            v-if="modelValue && modelValue.showType !== 'slideover'"
+            v-if="!modelValue.showType || modelValue.showType === 'dialog'"
             v-bind="thisProps"
             @closed="actionBack"
         >
@@ -28,6 +38,7 @@ const props = defineProps({
 });
 const emits = defineEmits(["update:modelValue"]);
 const currentAction = inject("currentAction", {});
+// 注意, 这里是多条数据
 const rows = inject("selectedRows");
 const thisProps = computed(() => {
     const vals = props.modelValue.showTypeProps || {};

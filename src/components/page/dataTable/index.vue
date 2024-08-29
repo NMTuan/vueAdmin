@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 22:00:10
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-28 15:15:13
+ * @LastEditTime: 2024-08-29 16:28:15
  * @FilePath: \vueAdmin\src\components\page\dataTable\index.vue
  * @Description: 
  * 
@@ -10,7 +10,10 @@
 -->
 <template>
     <div class="border border-solid border-zinc-200 p-6 bg-white rounded">
-        <Action v-if="Object.keys(currentAction).length" v-model="currentAction" />
+        <Action
+            v-if="Object.keys(currentAction).length"
+            v-model="currentAction"
+        />
         <!-- 操作区域 -->
         <div
             v-if="actions.filter((i) => i.positions.includes('top')).length"
@@ -82,7 +85,7 @@
             @current-change="handlePageChange"
         >
         </el-pagination>
-        <pre>{{currentAction}}</pre>
+        <pre>{{ currentAction }}</pre>
     </div>
 </template>
 
@@ -103,9 +106,6 @@ const rows = computed(() => {
 });
 const columns = computed(() => {
     if (fetchData.value.columns && Array.isArray(fetchData.value.columns)) {
-        // fetchData.value.columns.map((column) => {
-        //     column.prop = column.key;
-        // });
         return fetchData.value.columns || [];
     }
     // 没有返回 columns 配置的, 从第一条数据中获取
@@ -125,7 +125,7 @@ const actions = computed(() => {
     return pageConfig.value.actions || [];
 });
 const currentAction = ref({});
-provide('currentAction', currentAction)
+provide("currentAction", currentAction);
 
 const fetch = async () => {
     const url = pageConfig.value.fetchUrl || pageConfig.value.path;
@@ -158,12 +158,66 @@ const handleSizeChange = (size) => {
     fetch();
 };
 
+// 点击操作项
+const clickAction = (action, row = null) => {
+    // 完善 action 对象
+    action.path = `${pageConfig.value.path}/${action.key}`;
 
-const clickAction = (action, row)=>{
-    currentAction.value = action
-    currentAction.value.path = `${pageConfig.value.path}/${action.key}`
-    selectedRows.value = [row]
-}
+    // 赋值当前行数据
+    if (row) {
+        selectedRows.value = [row];
+    }
+
+    // confirm
+    if (action.component === "confirm") {
+        // 如果没有 message，则 message = title，title = label
+        // 否则 title=title message=message
+        let title = "",
+            message = "";
+        if (!action.confirmProps.message) {
+            message = action.confirmProps?.title;
+            title = action.label;
+        } else {
+            title = action.confirmProps?.title || action.label;
+            message = action.confirmProps?.message;
+        }
+        const url = action.fetchUrl || action.path;
+        let postData = {};
+        if (Array.isArray(action.query)) {
+            action.query.forEach((key) => {
+                const vals = [];
+                selectedRows.value.forEach((row) => {
+                    vals.push(row[key]);
+                });
+                postData[key] = vals.join(",");
+            });
+        } else {
+            postData = selectedRows.value
+        }
+
+        ElMessageBox.confirm(message, title, {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            beforeClose: async (action, instance, done) => {
+                if (action === "confirm") {
+                    instance.confirmButtonLoading = true;
+                    const res = await request.post(url, postData);
+                    console.log('res', res)
+                    if (res.code === 200) {
+                        done();
+                        // reload
+                    }
+                } else {
+                    done();
+                }
+            },
+        });
+        return;
+    }
+
+    // 打开 action 相应的对话框
+    currentAction.value = action;
+};
 
 // 页面进入是否自动加载
 if (pageConfig.value.autoFetch !== "false") {
