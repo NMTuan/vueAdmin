@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-28 11:18:01
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-29 16:11:12
+ * @LastEditTime: 2024-08-29 21:46:02
  * @FilePath: \vueAdmin\src\components\action\index.vue
  * @Description: 
  * 
@@ -63,12 +63,16 @@ const thisProps = computed(() => {
     }
     return vals;
 });
+const fetchList = inject('fetchList', [])
 const fetchData = ref({});
 provide("fetchData", fetchData);
 const loading = ref(false);
 
 // 关闭 dialog 或者 slideover
-const actionBack = () => {
+const actionBack = (refresh = false) => {
+    if(refresh){
+        fetchList();
+    }
     emits("update:modelValue", {});
 };
 provide("actionBack", actionBack);

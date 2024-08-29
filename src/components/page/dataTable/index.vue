@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 22:00:10
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-29 21:36:10
+ * @LastEditTime: 2024-08-29 21:46:30
  * @FilePath: \vueAdmin\src\components\page\dataTable\index.vue
  * @Description: 
  * 
@@ -164,6 +164,7 @@ const fetch = async () => {
         fetchData.value = res.data;
     }
 };
+provide('fetchList', fetch)
 
 // 单选 记录选中数据
 const handleCurrentChange = (val) => {
@@ -240,6 +241,7 @@ const clickAction = (action, row = null) => {
                     if (res.code === 200) {
                         done();
                         // reload
+                        fetch()
                     }
                 } else {
                     done();
