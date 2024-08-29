@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-28 11:50:50
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-29 22:01:03
+ * @LastEditTime: 2024-08-29 22:07:32
  * @FilePath: \vueAdmin\src\components\action\actionForm.vue
  * @Description: 
  * 
@@ -23,7 +23,20 @@
             :label="field.label"
             :key="field.key"
         >
-            <el-input v-model="formData[field.key]" />
+            <el-select
+                v-if="field.component === 'select'"
+                v-model="formData[field.key]"
+                v-bind="field.props"
+            >
+                <el-option
+                    v-for="option in field.options"
+                    :key="option.value"
+                    :label="option.label"
+                    :value="option.value"
+                >
+                </el-option>
+            </el-select>
+            <el-input v-else v-model="formData[field.key]" />
         </el-form-item>
         <el-form-item label=" ">
             <el-button :loading="loading" type="primary" @click="submit"
@@ -32,6 +45,7 @@
             <el-button text @click="actionBack()">取消</el-button>
         </el-form-item>
     </el-form>
+    <pre>formData: {{formData}}</pre>
 </template>
 <script setup>
 const pageConfig = inject("pageConfig", {});

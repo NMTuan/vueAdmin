@@ -86,7 +86,7 @@
             v-model:current-page="query.page"
             v-model:page-size="query.limit"
             :total="total"
-            :layout="'prev, pager, next, total, ->, jumper, sizes'"
+            :layout="'prev, pager, next, ->, total, sizes'"
             class="py-6 -mb-6 sticky bottom-0 z-8 bg-white"
             @size-change="handleSizeChange"
             @current-change="handlePageChange"
