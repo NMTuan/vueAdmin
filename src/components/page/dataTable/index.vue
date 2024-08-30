@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 22:00:10
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-29 21:46:30
+ * @LastEditTime: 2024-08-30 14:28:57
  * @FilePath: \vueAdmin\src\components\page\dataTable\index.vue
  * @Description: 
  * 
@@ -10,29 +10,30 @@
 -->
 <template>
     <div class="border border-solid border-zinc-200 p-6 bg-white rounded">
-        <Action
-            v-if="Object.keys(currentAction).length"
-            v-model="currentAction"
-        />
-        <!-- 操作区域 -->
-        <div
-            v-if="actions.filter((i) => i.positions.includes('top')).length"
-            class="mb-4"
-        >
-            <el-button
-                v-for="action in actions.filter((i) =>
-                    i.positions.includes('top')
-                )"
-                v-bind="action.props"
-                @click="clickAction(action)"
-                :disabled="handleTopActionDisabled(action.disabled?.top)"
+        <!-- 头部 -->
+        <div class="flex items-center justify-between mb-4">
+            <!-- 操作区域 -->
+            <div
+                v-if="actions.filter((i) => i.positions.includes('top')).length"
             >
-                <template #icon v-if="action.icon">
-                    <i :class="action.icon"></i>
-                </template>
-                {{ action.label }}
-            </el-button>
+                <el-button
+                    v-for="action in actions.filter((i) =>
+                        i.positions.includes('top')
+                    )"
+                    v-bind="action.props"
+                    @click="clickAction(action)"
+                    :disabled="handleTopActionDisabled(action.disabled?.top)"
+                >
+                    <template #icon v-if="action.icon">
+                        <i :class="action.icon"></i>
+                    </template>
+                    {{ action.label }}
+                </el-button>
+            </div>
+            <!-- 搜索及其它操作 -->
+            <DataTableSearch />
         </div>
+
         <el-table
             :data="rows"
             border
@@ -44,7 +45,7 @@
             v-bind="pageConfig.props"
         >
             <template v-for="(column, index) in columns">
-                <!-- 行操作项 -->
+                <!-- 行操作列 -->
                 <el-table-column v-if="column.component === 'actions'">
                     <template #default="{ row }">
                         <el-button
@@ -69,7 +70,7 @@
                         </el-button>
                     </template>
                 </el-table-column>
-
+                <!-- 其它列 -->
                 <el-table-column
                     v-else
                     :label="column.label"
@@ -92,6 +93,11 @@
             @current-change="handlePageChange"
         >
         </el-pagination>
+        <!-- 操作项的弹窗 -->
+        <Action
+            v-if="Object.keys(currentAction).length"
+            v-model="currentAction"
+        />
         <pre>{{ currentAction }}</pre>
     </div>
 </template>
@@ -103,8 +109,9 @@ const query = ref({
     page: 1,
     limit: 20,
 });
+provide('query', query)
 const fetchData = ref({});
-
+provide('fetchData', fetchData)
 // 是否为多选模式
 const multipleMode = computed(() => {
     return (
@@ -164,7 +171,7 @@ const fetch = async () => {
         fetchData.value = res.data;
     }
 };
-provide('fetchList', fetch)
+provide("fetchList", fetch);
 
 // 单选 记录选中数据
 const handleCurrentChange = (val) => {
@@ -199,6 +206,7 @@ const clickAction = (action, row = null) => {
     action.path = `${pageConfig.value.path}/${action.key}`;
 
     // 赋值当前行数据
+    // const rows = row ? [row]: selectedRows.value
     if (row) {
         selectedRows.value = [row];
     }
@@ -241,7 +249,7 @@ const clickAction = (action, row = null) => {
                     if (res.code === 200) {
                         done();
                         // reload
-                        fetch()
+                        fetch();
                     }
                 } else {
                     done();
@@ -258,11 +266,15 @@ const clickAction = (action, row = null) => {
 // 处理行内操作的禁用状态
 // 这里是比对 row 中的 key/value
 const handleRowActionDisabled = (rules, row = {}) => {
-    if (!rules || Object.keys(rules).length === 0 || Object.keys(row).length === 0) {
+    if (
+        !rules ||
+        Object.keys(rules).length === 0 ||
+        Object.keys(row).length === 0
+    ) {
         return;
     }
-    const func = sift(rules)
-    return func(row)
+    const func = sift(rules);
+    return func(row);
 };
 
 // 处理头部操作的禁用状态
@@ -271,9 +283,9 @@ const handleTopActionDisabled = (rules) => {
     if (!rules || Object.keys(rules).length === 0) {
         return;
     }
-    const func = sift(rules)
-    return func(selectedRows.value.length)
-}
+    const func = sift(rules);
+    return func(selectedRows.value.length);
+};
 
 // 页面进入是否自动加载
 if (pageConfig.value.autoFetch !== "false") {

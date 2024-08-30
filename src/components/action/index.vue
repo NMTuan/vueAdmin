@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-28 11:18:01
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-29 21:46:02
+ * @LastEditTime: 2024-08-30 10:25:45
  * @FilePath: \vueAdmin\src\components\action\index.vue
  * @Description: 
  * 
@@ -16,19 +16,44 @@
             @closed="actionBack"
         >
             <div v-loading="loading" class="min-h-16">
-                <ActionForm v-if="modelValue.component === 'form'" />
+                <ActionForm ref="formEl" v-if="modelValue.component === 'form'" />
                 <div v-else>没有匹配的组件</div>
             </div>
-            <hr />
-            <pre>{{ modelValue }}</pre>
-            <hr />
-            <pre>{{ rows }}</pre>
-            <div v-for="i in 100">{{ i }}</div>
+            <!-- <hr /> -->
+            <!-- <pre>{{ modelValue }}</pre> -->
+            <!-- <hr /> -->
+            <!-- <pre>{{ rows }}</pre> -->
+            <!-- <div v-for="i in 100">{{ i }}</div> -->
+            <template #footer>
+                <div class="text-left">
+                    <template v-if="modelValue.component === 'form'">
+                        <el-button type="primary" @click="submit">提交</el-button>
+                        <el-button text @click="actionBack">取消</el-button>
+                    </template>
+                </div>
+            </template>
         </el-dialog>
+        <el-drawer
+            v-else-if="['drawer', 'slideover'].includes(modelValue.showType)"
+            v-bind="thisProps"
+            @closed="actionBack"
+        >
+            <div v-loading="loading" class="min-h-16">
+                <ActionForm ref="formEl" v-if="modelValue.component === 'form'" />
+                <div v-else>没有匹配的组件</div>
+            </div>
+            <template #footer>
+                <div class="text-left">
+                    <template v-if="modelValue.component === 'form'">
+                        <el-button type="primary" @click="submit">提交</el-button>
+                        <el-button text @click="actionBack">取消</el-button>
+                    </template>
+                </div>
+            </template>
+        </el-drawer>
     </div>
 </template>
 <script setup>
-const route = useRoute();
 const props = defineProps({
     // 操作的配置
     modelValue: {
@@ -63,14 +88,19 @@ const thisProps = computed(() => {
     }
     return vals;
 });
-const fetchList = inject('fetchList', [])
+const fetchList = inject("fetchList", []);
 const fetchData = ref({});
 provide("fetchData", fetchData);
 const loading = ref(false);
+const formEl = ref(null)
 
+// 提交表单
+const submit = ()=>{
+    formEl.value.submit();
+}
 // 关闭 dialog 或者 slideover
 const actionBack = (refresh = false) => {
-    if(refresh === true){
+    if (refresh === true) {
         fetchList();
     }
     emits("update:modelValue", {});

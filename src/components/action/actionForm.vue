@@ -2,7 +2,17 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-28 11:50:50
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-29 22:07:32
+ * @LastEditTime: 2024-08-30 11:18:11
+ * @FilePath: \vueAdmin\src\components\action\actionForm.vue
+ * @Description: 
+ * 
+ * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
+-->
+<!--
+ * @Author: nmtuan nmtuan@qq.com
+ * @Date: 2024-08-28 11:50:50
+ * @LastEditors: nmtuan nmtuan@qq.com
+ * @LastEditTime: 2024-08-30 10:09:00
  * @FilePath: \vueAdmin\src\components\action\actionForm.vue
  * @Description: 
  * 
@@ -17,34 +27,7 @@
         type="warning"
     >
     </el-alert>
-    <el-form :data="formData" label-width="auto" class="p-4">
-        <el-form-item
-            v-for="field in fields"
-            :label="field.label"
-            :key="field.key"
-        >
-            <el-select
-                v-if="field.component === 'select'"
-                v-model="formData[field.key]"
-                v-bind="field.props"
-            >
-                <el-option
-                    v-for="option in field.options"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="option.value"
-                >
-                </el-option>
-            </el-select>
-            <el-input v-else v-model="formData[field.key]" />
-        </el-form-item>
-        <el-form-item label=" ">
-            <el-button :loading="loading" type="primary" @click="submit"
-                >提交</el-button
-            >
-            <el-button text @click="actionBack()">取消</el-button>
-        </el-form-item>
-    </el-form>
+    <ComForm v-model="formData" :fields="fields" />
     <pre>formData: {{formData}}</pre>
 </template>
 <script setup>
@@ -90,4 +73,8 @@ const submit = () => {
 watch(fetchData, (newVal) => {
     formData.value = JSON.parse(JSON.stringify(newVal.data));
 });
+
+defineExpose({
+    submit
+})
 </script>
