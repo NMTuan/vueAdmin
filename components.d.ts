@@ -11,6 +11,7 @@ declare module 'vue' {
     ActionForm: typeof import('./src/components/action/actionForm.vue')['default']
     ActionModal: typeof import('./src/components/action/actionModal.vue')['default']
     Blank: typeof import('./src/components/page/blank.vue')['default']
+    ComDialogModal: typeof import('./src/components/com/comDialogModal/index.vue')['default']
     ComDialogModel: typeof import('./src/components/com/comDialogModel/index.vue')['default']
     ComForm: typeof import('./src/components/com/comForm/index.vue')['default']
     DataTable: typeof import('./src/components/page/dataTable/index.vue')['default']

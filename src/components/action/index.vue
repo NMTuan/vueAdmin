@@ -10,7 +10,7 @@
 -->
 <template>
     <div v-if="Object.keys(modelValue).length">
-        <ComDialogModel
+        <ComDialogModal
             :showType="modelValue.showType"
             :thisProps="thisProps"
             :closed="actionBack"
@@ -32,7 +32,7 @@
                     </template>
                 </div>
             </template>
-        </ComDialogModel>
+        </ComDialogModal>
     </div>
 </template>
 <script setup>
