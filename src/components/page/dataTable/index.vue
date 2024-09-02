@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 22:00:10
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-30 14:28:57
+ * @LastEditTime: 2024-08-30 22:28:42
  * @FilePath: \vueAdmin\src\components\page\dataTable\index.vue
  * @Description: 
  * 
@@ -36,7 +36,6 @@
 
         <el-table
             :data="rows"
-            border
             stripe
             v-loading="loading"
             :highlight-current-row="!multipleMode"
@@ -46,7 +45,13 @@
         >
             <template v-for="(column, index) in columns">
                 <!-- 行操作列 -->
-                <el-table-column v-if="column.component === 'actions'">
+                <el-table-column
+                    v-if="column.component === 'actions'"
+                    :label="column.label"
+                    :prop="column.key"
+                    :type="column.component"
+                    v-bind="column.props"
+                >
                     <template #default="{ row }">
                         <el-button
                             v-for="(action, j) in actions.filter((i) =>
@@ -70,6 +75,15 @@
                         </el-button>
                     </template>
                 </el-table-column>
+                <!-- element plus 内置特殊列, 不做处理 -->
+                <el-table-column
+                    v-else-if="['selection'].includes(column.component)"
+                    :label="column.label"
+                    :prop="column.key"
+                    :type="column.component"
+                    v-bind="column.props"
+                >
+                </el-table-column>
                 <!-- 其它列 -->
                 <el-table-column
                     v-else
@@ -78,7 +92,34 @@
                     :type="column.component"
                     v-bind="column.props"
                 >
+                    <template #default="{ row, column: col, $index }">
+                        <slot :name="`column_${column.key}`">
+                            <ComField
+                                v-if="column.component"
+                                :type="column.component"
+                                :value="row[column.key]"
+                                :props="column.props"
+                            />
+                            <template v-else>
+                                {{ row[column.key] }}
+                            </template>
+                        </slot>
+                    </template>
                 </el-table-column>
+                <!-- 其它列 -->
+                <!-- <el-table-column
+                    v-else
+                    :label="column.label"
+                    :prop="column.key"
+                    :type="column.component"
+                    v-bind="column.props"
+                >
+                    <template #default="{ row, column, $index }">
+                        <slot :name="`column_${column.key}`">
+                            {{ row[column.property] }}
+                        </slot>
+                    </template>
+                </el-table-column> -->
             </template>
         </el-table>
         <!-- 分页 -->
@@ -109,9 +150,9 @@ const query = ref({
     page: 1,
     limit: 20,
 });
-provide('query', query)
+provide("query", query);
 const fetchData = ref({});
-provide('fetchData', fetchData)
+provide("fetchData", fetchData);
 // 是否为多选模式
 const multipleMode = computed(() => {
     return (
