@@ -2,16 +2,6 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-28 11:50:50
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-30 11:18:11
- * @FilePath: \vueAdmin\src\components\action\actionForm.vue
- * @Description: 
- * 
- * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
--->
-<!--
- * @Author: nmtuan nmtuan@qq.com
- * @Date: 2024-08-28 11:50:50
- * @LastEditors: nmtuan nmtuan@qq.com
  * @LastEditTime: 2024-08-30 10:09:00
  * @FilePath: \vueAdmin\src\components\action\actionForm.vue
  * @Description: 

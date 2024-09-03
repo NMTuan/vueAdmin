@@ -98,7 +98,8 @@
                                 v-if="column.component"
                                 :type="column.component"
                                 :value="row[column.key]"
-                                :props="column.props"
+                                :config="column"
+                                :row="row"
                             />
                             <template v-else>
                                 {{ row[column.key] }}

@@ -15,6 +15,7 @@ declare module 'vue' {
     ComDialogModel: typeof import('./src/components/com/comDialogModel/index.vue')['default']
     ComField: typeof import('./src/components/com/comField/index.vue')['default']
     ComFieldCopy: typeof import('./src/components/com/comField/comFieldCopy.vue')['default']
+    ComFieldDetail: typeof import('./src/components/com/comField/comFieldDetail.vue')['default']
     ComForm: typeof import('./src/components/com/comForm/index.vue')['default']
     DataTable: typeof import('./src/components/page/dataTable/index.vue')['default']
     DataTableSearch: typeof import('./src/components/page/dataTable/dataTableSearch.vue')['default']
