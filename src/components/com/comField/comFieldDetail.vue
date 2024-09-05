@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-09-03 05:23:48
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-05 09:02:55
+ * @LastEditTime: 2024-09-05 11:10:39
  * @FilePath: \vueAdmin\src\components\com\comField\comFieldDetail.vue
  * @Description: 
  * 
@@ -19,15 +19,7 @@
             :thisProps="dialogProps"
             :closed="() => (dialogVisible = false)"
         >
-            <el-descriptions :column="1" border v-loading="loading">
-                <el-descriptions-item
-                    v-for="field in fields"
-                    :label="field.label"
-                    :key="field.key"
-                >
-                    {{ fetchData.data[field.key] }}
-                </el-descriptions-item>
-            </el-descriptions>
+            <ComDetail :fields="fields" :row="fetchData" v-loading="loading" />
         </ComDialogModal>
     </div>
 </template>
@@ -72,12 +64,12 @@ const linkProps = computed(() => {
     };
 });
 // 对话框配置
-const dialogProps = computed(()=>{
+const dialogProps = computed(() => {
     return {
         ...config.showTypeProps,
         modelValue: dialogVisible.value,
-    }
-})
+    };
+});
 
 // 点击按钮
 const handleClick = () => {

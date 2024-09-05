@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 22:14:12
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-04 05:29:57
+ * @LastEditTime: 2024-09-05 11:44:20
  * @FilePath: \vueAdmin\src\components\com\comField\index.vue
  * @Description: 
  * 
@@ -12,10 +12,12 @@
     <div>
         <ComFieldCopy v-if="type === 'copy'"></ComFieldCopy>
         <ComFieldDetail v-else-if="type === 'detail'"></ComFieldDetail>
+        <ComFieldEnum v-else-if="type === 'enum'"></ComFieldEnum>
         <template v-else> {{ type }} | {{ value }} </template>
     </div>
 </template>
 <script setup>
+// TODO vue 升级3.5后, 结构 props, 然后 provide
 const props = defineProps({
     type: {
         type: String,
