@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 14:25:00
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-05 09:46:19
+ * @LastEditTime: 2024-09-05 10:16:23
  * @FilePath: \vueAdmin\src\components\page\dataTable\dataTableSearch.vue
  * @Description: 
  * 
@@ -11,16 +11,17 @@
 <template>
     <div class="flex items-center">
         <!-- 搜索 -->
-        <ComForm
-            v-if="Array.isArray(searchFields) && searchFields.length"
-            v-model="query"
-            :fields="searchFields"
-            :formProps="{
-                labelPosition: 'left',
-                inline: true,
-            }"
-        ></ComForm>
-        <el-button type="primary" @click="handleSearch"> 搜索 </el-button>
+        <template v-if="Array.isArray(searchFields) && searchFields.length">
+            <ComForm
+                v-model="query"
+                :fields="searchFields"
+                :formProps="{
+                    labelPosition: 'left',
+                    inline: true,
+                }"
+            ></ComForm>
+            <el-button type="primary" @click="handleSearch"> 搜索 </el-button>
+        </template>
 
         <!-- 更多操作 -->
         <el-dropdown class="ml-3" trigger="click" placement="bottom-end">
@@ -31,15 +32,31 @@
             </el-button>
             <template #dropdown>
                 <el-dropdown-menu>
-                    <el-dropdown-item @click="fetchList">
+                    <el-dropdown-item
+                        @click="fetchList"
+                        v-if="
+                            Array.isArray(searchFields) && searchFields.length
+                        "
+                    >
                         <i class="ri-refresh-line"></i>
                         刷新列表
                     </el-dropdown-item>
-                    <el-dropdown-item @click="() => advSearchRef.open()">
+                    <el-dropdown-item
+                        @click="() => advSearchRef.open()"
+                        v-if="
+                            Array.isArray(fetchData.advSearch) &&
+                            fetchData.advSearch.length
+                        "
+                    >
                         <i class="ri-search-line"></i>
                         高级搜索
                     </el-dropdown-item>
-                    <el-dropdown-item @click="handleReset">
+                    <el-dropdown-item
+                        @click="handleReset"
+                        v-if="
+                            Array.isArray(searchFields) && searchFields.length
+                        "
+                    >
                         <i class="ri-reset-left-line"></i>
                         重置搜索
                     </el-dropdown-item>
@@ -61,7 +78,12 @@
                 </el-dropdown-menu>
             </template>
         </el-dropdown>
-        <DataTableAdvSearch ref="advSearchRef" />
+        <DataTableAdvSearch
+            ref="advSearchRef"
+            v-if="
+                Array.isArray(fetchData.advSearch) && fetchData.advSearch.length
+            "
+        />
         <DataTableOptions ref="tableOptionsRef" />
     </div>
 </template>
@@ -91,6 +113,7 @@ const handleReset = () => {
     query.value = defaultQuery;
     fetchList();
 };
+provide("handleReset", handleReset);
 </script>
 <style lang="scss" scoped>
 :deep() {

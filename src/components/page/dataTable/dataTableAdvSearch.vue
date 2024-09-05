@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 14:25:00
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-04 06:23:01
+ * @LastEditTime: 2024-09-05 10:14:24
  * @FilePath: \vueAdmin\src\components\page\dataTable\dataTableAdvSearch.vue
  * @Description: 
  * 
@@ -14,21 +14,24 @@
         :thisProps="{
             title: '高级搜索',
             modelValue: advSearchVisiable,
-            closeOnClickModal: true,
-            closeOnPressEscape: true,
+            closeOnClickModal: false,
+            closeOnPressEscape: false,
             destroyOnClose: true,
         }"
         :closed="() => (advSearchVisiable = false)"
     >
         <ComForm v-model="query" :fields="advSearchFields" />
         <template #footer>
-            <div class="text-left">
-                <el-button type="primary" @click="submitAdvSarch">
-                    提交
-                </el-button>
-                <el-button text @click="advSearchVisiable = false">
-                    取消
-                </el-button>
+            <div class="flex">
+                <div class="flex-1 text-left">
+                    <el-button type="primary" @click="submitAdvSarch">
+                        提交
+                    </el-button>
+                    <el-button text @click="advSearchVisiable = false">
+                        取消
+                    </el-button>
+                </div>
+                <el-button @click="reset"> 重置 </el-button>
             </div>
         </template>
     </ComDialogModal>
@@ -37,6 +40,7 @@
 const fetchData = inject("fetchData", {});
 const query = inject("query", {});
 const fetchList = inject("fetchList", () => {});
+const handleReset = inject("handleReset", () => {});
 
 // 高级搜索对话框的显示状态
 const advSearchVisiable = ref(false);
@@ -48,6 +52,12 @@ const advSearchFields = computed(() => {
 const submitAdvSarch = () => {
     advSearchVisiable.value = false;
     fetchList();
+};
+
+// 重置搜索
+const reset = () => {
+    handleReset();
+    advSearchVisiable.value = false;
 };
 
 // 打开

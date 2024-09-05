@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 22:00:10
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-05 10:01:22
+ * @LastEditTime: 2024-09-05 10:15:18
  * @FilePath: \vueAdmin\src\components\page\dataTable\index.vue
  * @Description: 
  * 
@@ -13,11 +13,14 @@
         <!-- 头部 -->
         <div class="flex items-center justify-between mb-4">
             <!-- 操作区域 -->
-            <div
-                v-if="actions.filter((i) => i.positions.includes('top')).length"
-                class="flex-1"
-            >
-                <div class="flex">
+            <div class="flex-1">
+                <div
+                    v-if="
+                        actions.filter((i) => i.positions.includes('top'))
+                            .length
+                    "
+                    class="flex"
+                >
                     <el-button
                         v-for="action in actions.filter((i) =>
                             i.positions.includes('top')
