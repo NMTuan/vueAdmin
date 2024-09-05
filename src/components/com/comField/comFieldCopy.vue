@@ -2,14 +2,14 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 22:23:33
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-04 05:32:55
+ * @LastEditTime: 2024-09-05 09:00:04
  * @FilePath: \vueAdmin\src\components\com\comField\comFieldCopy.vue
  * @Description: 
  * 
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
 -->
 <template>
-    <div class="flex items-center">
+    <div>
         <el-button
             v-if="!thisProps?.position || thisProps?.position === 'before'"
             link

@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 14:25:00
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-30 21:40:07
+ * @LastEditTime: 2024-09-05 09:46:19
  * @FilePath: \vueAdmin\src\components\page\dataTable\dataTableSearch.vue
  * @Description: 
  * 
@@ -20,51 +20,49 @@
                 inline: true,
             }"
         ></ComForm>
-        <!-- 操作 -->
-        <el-dropdown split-button type="primary" @click="handleSearch">
-            搜索
+        <el-button type="primary" @click="handleSearch"> 搜索 </el-button>
+
+        <!-- 更多操作 -->
+        <el-dropdown class="ml-3" trigger="click" placement="bottom-end">
+            <el-button>
+                <template #icon>
+                    <i class="ri-more-2-fill"></i>
+                </template>
+            </el-button>
             <template #dropdown>
                 <el-dropdown-menu>
-                    <el-dropdown-item @click="handleReset">
-                        重置搜索
+                    <el-dropdown-item @click="fetchList">
+                        <i class="ri-refresh-line"></i>
+                        刷新列表
                     </el-dropdown-item>
-                    <el-dropdown-item @click="advSearchVisiable = true">
+                    <el-dropdown-item @click="() => advSearchRef.open()">
+                        <i class="ri-search-line"></i>
                         高级搜索
                     </el-dropdown-item>
-                    <el-dropdown-item divided>表格设定</el-dropdown-item>
-                    <el-dropdown-item>条件过滤</el-dropdown-item>
-                    <el-dropdown-item>导出搜索结果</el-dropdown-item>
+                    <el-dropdown-item @click="handleReset">
+                        <i class="ri-reset-left-line"></i>
+                        重置搜索
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                        divided
+                        @click="() => tableOptionsRef.open()"
+                    >
+                        <i class="ri-settings-line"></i>
+                        表格设定
+                    </el-dropdown-item>
+                    <el-dropdown-item divided disabled>
+                        <i class="ri-filter-line"></i>
+                        条件过滤
+                    </el-dropdown-item>
+                    <el-dropdown-item disabled>
+                        <i class="ri-download-line"></i>
+                        导出搜索结果
+                    </el-dropdown-item>
                 </el-dropdown-menu>
             </template>
         </el-dropdown>
-        <!-- <el-button class="ml-3">
-            <template #icon>
-                <i class="ri-refresh-line" @click="fetchList"></i>
-            </template>
-        </el-button> -->
-        <ComDialogModal
-            showType="slideover"
-            :thisProps="{
-                title: '高级搜索',
-                modelValue: advSearchVisiable,
-                closeOnClickModal: true,
-                closeOnPressEscape: true,
-                destroyOnClose: true
-            }"
-            :closed="() => (advSearchVisiable = false)"
-        >
-            <ComForm v-model="query" :fields="advSearchFields" />
-            <template #footer>
-                <div class="text-left">
-                    <el-button type="primary" @click="submitAdvSarch">
-                        提交
-                    </el-button>
-                    <el-button text @click="advSearchVisiable = false">
-                        取消
-                    </el-button>
-                </div>
-            </template>
-        </ComDialogModal>
+        <DataTableAdvSearch ref="advSearchRef" />
+        <DataTableOptions ref="tableOptionsRef" />
     </div>
 </template>
 <script setup>
@@ -77,14 +75,15 @@ const searchFields = computed(() => {
     return fetchData.value.search || null;
 });
 
-// 高级搜索对话框的显示状态
-const advSearchVisiable = ref(false);
-const advSearchFields = computed(() => {
-    return fetchData.value.advSearch || null;
-});
+// 高级搜索 ref
+const advSearchRef = ref(null);
+
+// 表格设置 ref
+const tableOptionsRef = ref(null);
 
 // 点击搜索
 const handleSearch = () => {
+    query.page = 1;
     fetchList();
 };
 // 重置搜索
@@ -92,10 +91,11 @@ const handleReset = () => {
     query.value = defaultQuery;
     fetchList();
 };
-
-// 提交高级搜索
-const submitAdvSarch = () => {
-    advSearchVisiable.value = false;
-    fetchList();
-};
 </script>
+<style lang="scss" scoped>
+:deep() {
+    .el-button-group {
+        @apply flex;
+    }
+}
+</style>

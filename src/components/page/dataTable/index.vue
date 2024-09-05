@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 22:00:10
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-30 22:28:42
+ * @LastEditTime: 2024-09-05 10:01:22
  * @FilePath: \vueAdmin\src\components\page\dataTable\index.vue
  * @Description: 
  * 
@@ -15,20 +15,25 @@
             <!-- 操作区域 -->
             <div
                 v-if="actions.filter((i) => i.positions.includes('top')).length"
+                class="flex-1"
             >
-                <el-button
-                    v-for="action in actions.filter((i) =>
-                        i.positions.includes('top')
-                    )"
-                    v-bind="action.props"
-                    @click="clickAction(action)"
-                    :disabled="handleTopActionDisabled(action.disabled?.top)"
-                >
-                    <template #icon v-if="action.icon">
-                        <i :class="action.icon"></i>
-                    </template>
-                    {{ action.label }}
-                </el-button>
+                <div class="flex">
+                    <el-button
+                        v-for="action in actions.filter((i) =>
+                            i.positions.includes('top')
+                        )"
+                        v-bind="action.props"
+                        @click="clickAction(action)"
+                        :disabled="
+                            handleTopActionDisabled(action.disabled?.top)
+                        "
+                    >
+                        <template #icon v-if="action.icon">
+                            <i :class="action.icon"></i>
+                        </template>
+                        {{ action.label }}
+                    </el-button>
+                </div>
             </div>
             <!-- 搜索及其它操作 -->
             <DataTableSearch />
@@ -50,7 +55,7 @@
                     :label="column.label"
                     :prop="column.key"
                     :type="column.component"
-                    v-bind="column.props"
+                    v-bind="columnProps(column)"
                 >
                     <template #default="{ row }">
                         <el-button
@@ -81,7 +86,7 @@
                     :label="column.label"
                     :prop="column.key"
                     :type="column.component"
-                    v-bind="column.props"
+                    v-bind="columnProps(column)"
                 >
                 </el-table-column>
                 <!-- 其它列 -->
@@ -90,7 +95,7 @@
                     :label="column.label"
                     :prop="column.key"
                     :type="column.component"
-                    v-bind="column.props"
+                    v-bind="columnProps(column)"
                 >
                     <template #default="{ row, column: col, $index }">
                         <slot :name="`column_${column.key}`">
@@ -145,6 +150,8 @@
 </template>
 
 <script setup>
+const route = useRoute();
+const dataTableStore = useDataTableStore();
 const pageConfig = inject("pageConfig", {});
 const loading = ref(false);
 const query = ref({
@@ -173,18 +180,28 @@ const rows = computed(() => {
 
 // 从 fetchData 中找到 列数据
 const columns = computed(() => {
+    let cols = [];
     if (fetchData.value.columns && Array.isArray(fetchData.value.columns)) {
-        return fetchData.value.columns || [];
+        cols = fetchData.value.columns || [];
     }
     // 没有返回 columns 配置的, 从第一条数据中获取
-    if (Array.isArray(rows.value) && rows.value.length > 0) {
-        return Object.keys(fetchData.value.rows[0]).map((item) => {
+    else if (Array.isArray(rows.value) && rows.value.length > 0) {
+        cols = Object.keys(fetchData.value.rows[0]).map((item) => {
             return {
                 label: item,
                 prop: item,
             };
         });
     }
+
+    // 按照配置, 隐藏不必要的列
+    return cols.filter((col) => {
+        return (
+            dataTableStore.configTableColumnsVals[
+                `${route.path}__hidden__${col.key}`
+            ] !== true
+        );
+    });
 });
 
 // 从 fetchData 中找到 数据总条数
@@ -327,6 +344,22 @@ const handleTopActionDisabled = (rules) => {
     }
     const func = sift(rules);
     return func(selectedRows.value.length);
+};
+
+// 处理列配置项
+const columnProps = (column) => {
+    return {
+        ...column.props,
+        width: dataTableStore.configTableColumnsVals[
+            `${route.path}__width__${column.key}`
+        ],
+        align: dataTableStore.configTableColumnsVals[
+            `${route.path}__align__${column.key}`
+        ],
+        fixed: dataTableStore.configTableColumnsVals[
+            `${route.path}__fixed__${column.key}`
+        ],
+    };
 };
 
 // 页面进入是否自动加载

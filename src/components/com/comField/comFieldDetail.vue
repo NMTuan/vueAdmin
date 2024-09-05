@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-09-03 05:23:48
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-04 06:11:05
+ * @LastEditTime: 2024-09-05 09:02:55
  * @FilePath: \vueAdmin\src\components\com\comField\comFieldDetail.vue
  * @Description: 
  * 
@@ -10,9 +10,9 @@
 -->
 <template>
     <div>
-        <el-button v-bind="buttonProps" @click="handleClick">
+        <el-link v-bind="linkProps" @click="handleClick">
             {{ value }}
-        </el-button>
+        </el-link>
         <ComDialogModal
             v-if="dialogVisible"
             :showType="config.showType"
@@ -65,9 +65,8 @@ const fields = computed(() => {
     });
 });
 // 按钮配置项
-const buttonProps = computed(() => {
+const linkProps = computed(() => {
     return {
-        text: true,
         type: "primary",
         ...config?.props,
     };
