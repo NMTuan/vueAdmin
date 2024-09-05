@@ -2,8 +2,8 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 14:25:00
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-05 10:16:23
- * @FilePath: \vueAdmin\src\components\page\dataTable\dataTableSearch.vue
+ * @LastEditTime: 2024-09-06 05:50:15
+ * @FilePath: \vueAdmin\src\components\com\comTable\comTableSearch.vue
  * @Description: 
  * 
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
@@ -22,7 +22,6 @@
             ></ComForm>
             <el-button type="primary" @click="handleSearch"> 搜索 </el-button>
         </template>
-
         <!-- 更多操作 -->
         <el-dropdown class="ml-3" trigger="click" placement="bottom-end">
             <el-button>
@@ -78,20 +77,20 @@
                 </el-dropdown-menu>
             </template>
         </el-dropdown>
-        <DataTableAdvSearch
+        <ComTableAdvSearch
             ref="advSearchRef"
             v-if="
                 Array.isArray(fetchData.advSearch) && fetchData.advSearch.length
             "
         />
-        <DataTableOptions ref="tableOptionsRef" />
+        <ComTableOptions ref="tableOptionsRef" />
     </div>
 </template>
 <script setup>
 const fetchData = inject("fetchData", {});
 const query = inject("query", {});
 // 暂存一下查询条件, 供 reset 使用
-const defaultQuery = JSON.parse(JSON.stringify(query.value));
+const defaultQuery = JSON.stringify(query.value);
 const fetchList = inject("fetchList", () => {});
 const searchFields = computed(() => {
     return fetchData.value.search || null;
@@ -110,7 +109,7 @@ const handleSearch = () => {
 };
 // 重置搜索
 const handleReset = () => {
-    query.value = defaultQuery;
+    query.value = JSON.parse(defaultQuery);
     fetchList();
 };
 provide("handleReset", handleReset);

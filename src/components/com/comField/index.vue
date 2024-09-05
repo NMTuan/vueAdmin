@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 22:14:12
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-05 11:44:20
+ * @LastEditTime: 2024-09-05 11:52:33
  * @FilePath: \vueAdmin\src\components\com\comField\index.vue
  * @Description: 
  * 
@@ -13,6 +13,7 @@
         <ComFieldCopy v-if="type === 'copy'"></ComFieldCopy>
         <ComFieldDetail v-else-if="type === 'detail'"></ComFieldDetail>
         <ComFieldEnum v-else-if="type === 'enum'"></ComFieldEnum>
+        <ComFieldTable v-else-if="type === 'table'"></ComFieldTable>
         <template v-else> {{ type }} | {{ value }} </template>
     </div>
 </template>
