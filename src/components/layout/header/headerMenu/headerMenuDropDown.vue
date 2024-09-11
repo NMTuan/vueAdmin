@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-09-06 11:54:55
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-11 12:13:18
+ * @LastEditTime: 2024-09-11 13:49:53
  * @FilePath: \vueAdmin\src\components\layout\header\headerMenu\headerMenuDropDown.vue
  * @Description: 
  * 
@@ -15,7 +15,10 @@
         </HeaderMenuItem>
         <template #dropdown>
             <el-dropdown-menu>
-                <el-dropdown-item v-for="menu in item.dropDown" @click="handleClick(menu)">
+                <el-dropdown-item
+                    v-for="menu in item.dropDown"
+                    @click="handleClick(menu)"
+                >
                     <i :class="menu.icon" v-if="menu.icon" class="mr-2"></i>
                     {{ menu.label }}
                 </el-dropdown-item>
@@ -24,14 +27,17 @@
     </el-dropdown>
 </template>
 <script setup>
+const router = useRouter();
 const props = defineProps({
     item: Object,
     default: () => {},
 });
-const logout = inject('logout')
+const logout = inject("logout");
 const handleClick = (item) => {
-    if(item.component === 'logout'){
-        logout()
+    if (item.component === "logout") {
+        logout();
+    } else if(item.to) {
+        router.push({ path: item.to });
     }
-}
+};
 </script>
