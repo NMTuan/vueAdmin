@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 16:41:12
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-27 15:41:24
+ * @LastEditTime: 2024-09-11 10:57:35
  * @FilePath: \vueAdmin\src\main.ts
  * @Description:
  *
@@ -14,6 +14,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import ElementPlus from "element-plus";
 
 import "element-plus/dist/index.css";
+import 'element-plus/theme-chalk/dark/css-vars.css'
 import "virtual:uno.css";
 import "@unocss/reset/eric-meyer.css";
 import "remixicon/fonts/remixicon.css";

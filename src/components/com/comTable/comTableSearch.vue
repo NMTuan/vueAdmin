@@ -9,7 +9,7 @@
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
 -->
 <template>
-    <div class="flex items-center">
+    <div class="flex items-center ml-3">
         <!-- 搜索 -->
         <template v-if="Array.isArray(searchFields) && searchFields.length">
             <ComForm

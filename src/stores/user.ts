@@ -115,10 +115,16 @@ export const useUserStore = defineStore("user", () => {
         }
         return menuFlat.value.some((item: any) => item.name === path);
     };
+
+    // topbar
+    const topbar = computed(() => {
+        return user.value.topbar || [];
+    });
     return {
         user,
         menu,
         menuFlat,
+        topbar,
         login,
         checkAuth,
         checkUserInfo,
