@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-26 19:52:34
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-27 14:35:48
+ * @LastEditTime: 2024-08-29 17:26:59
  * @FilePath: \vueAdmin\vite.config.ts
  * @Description:
  *
@@ -28,6 +28,12 @@ export default defineConfig({
                 "pinia",
                 {
                     axios: [["default", "axios"]],
+                },
+                {
+                    "element-plus": ["ElMessage", "ElMessageBox"],
+                },
+                {
+                    sift: [["default", "sift"]],
                 },
                 //  'element-plus'
             ],

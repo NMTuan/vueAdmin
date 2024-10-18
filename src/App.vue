@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 16:41:12
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-27 16:16:51
+ * @LastEditTime: 2024-08-28 10:56:27
  * @FilePath: \vueAdmin\src\App.vue
  * @Description: 
  * 
@@ -10,21 +10,23 @@
 -->
 <template>
     <router-view v-slot="{ Component }">
-        <keep-alive> 
-            <component :is="Component" :key="key" />
-         </keep-alive>
+        <keep-alive include="dataTable">
+            <component :is="Component" :key="pageConfig?.name || ''" />
+        </keep-alive>
     </router-view>
 </template>
 
 <script setup lang="ts">
 const route = useRoute();
-// 确保同路由组件在切换页面时可重新渲染
-const key = computed(() => {
-    if (route.name === "x") {
-        return route.params.x.join("-");
-    }
-    return route.name;
+const userStore = useUserStore();
+
+// 接口返回的当前页面的配置项
+const pageConfig = computed(() => {
+    return userStore.menuFlat.find(
+        (item) => item.name === route.path.slice(1).replaceAll("/", "-")
+    );
 });
+provide("pageConfig", pageConfig);
 </script>
 
 <style scoped></style>
