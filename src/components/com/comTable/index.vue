@@ -31,7 +31,6 @@
             <!-- 搜索及其它操作 -->
             <ComTableSearch />
         </div>
-
         <el-table
             :data="rows"
             stripe
@@ -95,12 +94,12 @@
                         <ComField
                             v-if="column.component"
                             :type="column.component"
-                            :value="row[column.key]"
+                            :value="handleShowContent({column, row})"
                             :config="column"
                             :row="row"
                         />
                         <template v-else>
-                            {{ row[column.key] }}
+                            {{ handleShowContent({column, row}) }}
                         </template>
                         <!-- </slot> -->
                     </template>
@@ -275,7 +274,7 @@ const clickAction = (action, row = null) => {
                     if (res.code === 200) {
                         done();
                         // reload
-                        props.fetch();
+                        await fetchList();
                     }
                 } else {
                     done();
@@ -330,7 +329,9 @@ const columnProps = (column) => {
 };
 
 const fetchList = async () => {
-    return await props.fetch();
+    await props.fetch();
+    // 每次刷新, 清除选中的内容
+    selectedRows.value = [];
 };
 provide("fetchList", fetchList);
 
@@ -360,4 +361,10 @@ const handleSizeChange = (size) => {
     query.value.limit = size;
     props.fetch();
 };
+
+// 单元格内显示的内容, 支持 parent.child.child 这种方式取json中的值
+const handleShowContent = ({column, row}) => {
+    // row[column.key]
+    return column.key.split('.').reduce((total, item) => total[item], row)
+}
 </script>
