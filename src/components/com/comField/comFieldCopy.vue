@@ -2,8 +2,8 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 22:23:33
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-05 09:00:04
- * @FilePath: \vueAdmin\src\components\com\comField\comFieldCopy.vue
+ * @LastEditTime: 2024-10-27 19:48:16
+ * @FilePath: \ProPayc:\project\vueAdmin\src\components\com\comField\comFieldCopy.vue
  * @Description: 
  * 
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
@@ -38,9 +38,9 @@ const value = inject("value", "");
 const config = inject("config", {
     props: {},
 });
-const thisProps = computed(()=>{
-    return config?.props || {}
-})
+const thisProps = computed(() => {
+    return config.value?.props || {};
+});
 const state = ref(false);
 const type = computed(() => {
     if (state.value) {
@@ -60,7 +60,7 @@ let dt;
 
 const handleClick = () => {
     clearTimeout(dt);
-    navigator.clipboard.writeText(value);
+    navigator.clipboard.writeText(value.value);
     state.value = true;
     dt = setTimeout(() => {
         state.value = false;

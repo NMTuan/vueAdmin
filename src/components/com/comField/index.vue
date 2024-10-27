@@ -2,8 +2,8 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 22:14:12
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-05 11:52:33
- * @FilePath: \vueAdmin\src\components\com\comField\index.vue
+ * @LastEditTime: 2024-10-27 19:45:07
+ * @FilePath: \ProPayc:\project\vueAdmin\src\components\com\comField\index.vue
  * @Description: 
  * 
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
@@ -42,7 +42,7 @@ const props = defineProps({
     //     default: () => {},
     // },
 });
-provide("value", props.value);
-provide("config", props.config);
-provide("row", props.row);
+provide("value", computed(() => props.value));
+provide("config", computed(() => props.config));
+provide("row", computed(() => props.row));
 </script>

@@ -8,7 +8,9 @@ const value = inject("value", "");
 const config = inject("config", "");
 
 const option = computed(() => {
-    return config?.options?.find((option) => option.value.toString() === value.toString());
+    return config.value?.options?.find(
+        (option) => option.value.toString() === value.value.toString()
+    );
 });
 
 const showVal = computed(() => {
