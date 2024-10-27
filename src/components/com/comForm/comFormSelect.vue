@@ -61,10 +61,14 @@ const fetchOptions = async () => {
     loading.value = true;
     const res = await request[
         field.value.fetchOptions?.method.toLowerCase() || "get"
-    ](field.value.fetchOptions.url, {
-        query,
-        body,
-    });
+    ](
+        field.value.fetchOptions.url,
+        {},
+        {
+            params: query,
+            body,
+        }
+    );
     loading.value = false;
     if (res.code === 200 && Array.isArray(res.data.rows)) {
         res.data.rows.map((row) => {
@@ -73,9 +77,7 @@ const fetchOptions = async () => {
                 label: row[field.value.fetchOptions.labelKey || "label"],
             });
         });
-        // options.value = [...options.value, ...res.data.rows];
     }
-    // console.log("res", res);
 };
 
 // 图标
