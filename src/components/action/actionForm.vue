@@ -2,8 +2,8 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-28 11:50:50
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-10-14 21:48:24
- * @FilePath: \ProPayAdmin\src\components\action\actionForm.vue
+ * @LastEditTime: 2024-10-27 20:40:36
+ * @FilePath: \ProPayc:\project\vueAdmin\src\components\action\actionForm.vue
  * @Description: 
  * 
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
@@ -17,25 +17,43 @@
         type="warning"
     >
     </el-alert>
-    <ComForm v-model="formData" :fields="fields" />
+    <ComForm v-loading="loading" v-model="formData" :fields="fields" />
     <pre>formData: {{ formData }}</pre>
 </template>
 <script setup>
-const pageConfig = inject("pageConfig", {});
 const rows = inject("selectedRows");
-const currentAction = inject("currentAction", {});
-const fetchData = inject("fetchData", {});
 const actionBack = inject("actionBack", () => {});
-const loading = ref(false);
+
+const props = defineProps({
+    fetchUrl: {
+        type: String,
+        default: "",
+    },
+    fetchType: {
+        type: String,
+        default: "get",
+    },
+    fetchParams: {
+        type: Object,
+        default: () => ({}),
+    },
+});
+// 异步拉取的数据
+const fetchData = ref({});
+// 表单数据
 const formData = ref({});
+const loading = ref(false);
+
+// 表单项
 const fields = computed(() => {
+    // 如果返回了, 直接用
     if (
         Array.isArray(fetchData.value.fields) &&
         fetchData.value.fields.length
     ) {
         return fetchData.value.fields;
     }
-    // 从 formData 中获取
+    // 否则从 formData 中获取
     return Object.keys(formData.value).map((key) => {
         return {
             key,
@@ -44,55 +62,48 @@ const fields = computed(() => {
     });
 });
 
+// 异步拉取表单
+const fetchRequest = async () => {
+    loading.value = true;
+    const res = await request.get(props.fetchUrl, props.fetchParams || {});
+    loading.value = false;
+    if (res.code === 200) {
+        fetchData.value = res.data;
+        if (res.data.data) {
+            formData.value = JSON.parse(JSON.stringify(res.data.data));
+        }
+    }
+};
+
 // 提交表单
 const submit = () => {
     loading.value = true;
-    const url = pageConfig.value.submitUrl || currentAction.value.path;
 
     // 处理formData数据类型
     fields.value.forEach((field) => {
         if (field.fieldType === "number") {
-            console.log(field.type, field.key, formData.value[field.key]);
             formData.value[field.key] = Number(
                 formData.value[field.key] ?? "0"
             );
         }
     });
 
-    // 构建get参数
-    const query = {};
-    if (Array.isArray(currentAction.value.query)) {
-        currentAction.value.query.forEach((key) => {
-            const vals = [];
-            rows.value.forEach((row) => {
-                vals.push(row[key]);
-            });
-            query[key] = vals.join(",");
-        });
-    }
     request
-        .post(url, formData.value, {
-            params: {
-                ...query,
-                ...(currentAction.value.params || {}),
-            },
+        .post(props.fetchUrl, formData.value, {
+            params: props.fetchParams || {},
         })
         .then((res) => {
-            loading.value = false;
             if (res.code === 200) {
-                ElMessage.success("操作成功");
                 actionBack(true);
-            } else {
-                ElMessage.error(res.message);
             }
+        })
+        .finally(() => {
+            loading.value = false;
         });
 };
 
-// 监听 formData 变化, clone 一份给本地
-watch(fetchData, (newVal) => {
-    if (newVal.data && Object.keys(newVal.data).length > 0) {
-        formData.value = JSON.parse(JSON.stringify(newVal.data));
-    }
+onMounted(() => {
+    fetchRequest();
 });
 
 defineExpose({

@@ -1,5 +1,9 @@
 <template>
     <div class="border border-solid border-zinc-200 p-6 bg-white rounded">
+        <!-- <hr>
+        fetchData: <pre>{{ fetchData }}</pre>
+        <hr>
+        loading: {{ loading }} -->
         <!-- 头部 -->
         <div class="flex items-center justify-between mb-4">
             <!-- 操作区域 -->
@@ -94,12 +98,12 @@
                         <ComField
                             v-if="column.component"
                             :type="column.component"
-                            :value="handleShowContent({column, row})"
+                            :value="handleShowContent({ column, row })"
                             :config="column"
                             :row="row"
                         />
                         <template v-else>
-                            {{ handleShowContent({column, row}) }}
+                            {{ handleShowContent({ column, row }) }}
                         </template>
                         <!-- </slot> -->
                     </template>
@@ -129,41 +133,27 @@
 const route = useRoute();
 const dataTableStore = useDataTableStore();
 const props = defineProps({
-    // 数据加载状态
-    loading: {
-        type: Boolean,
-        default: false,
+    fetchUrl: {
+        type: String,
+        default: "",
     },
-    query: {
-        type: Object,
-        default: () => ({
-            page: 1,
-            limit: 10,
-        }),
+    fetchType: {
+        type: String,
+        default: "get",
     },
-    // 数据接口返回的数据
-    data: {
+    fetchParams: {
         type: Object,
         default: () => {},
     },
-    // 异步加载数据的方法
-    fetch: {
-        type: Function,
-        default: () => {},
-    },
 });
-const fetchData = computed(() => {
-    return props.data;
-});
+const loading = ref(false);
+const fetchData = ref({});
 provide("fetchData", fetchData);
-const parentUrl = inject("parentUrl", route.path);
 
-const query = defineModel("query", {
-    type: Object,
-    default: () => ({
-        page: 1,
-        limit: 10,
-    }),
+const query = ref({
+    ...props.fetchParams,
+    page: 1,
+    limit: 10,
 });
 provide("query", query);
 
@@ -173,17 +163,17 @@ provide("selectedRows", selectedRows);
 
 // 从 fetchData 中找到 行数据
 const rows = computed(() => {
-    return props.data.rows || [];
+    return fetchData.value.rows || [];
 });
 // 从 fetchData 中找到 列数据
 const columns = computed(() => {
     let cols = [];
-    if (props.data.columns && Array.isArray(props.data.columns)) {
-        cols = props.data.columns || [];
+    if (fetchData.value.columns && Array.isArray(fetchData.value.columns)) {
+        cols = fetchData.value.columns || [];
     }
     // 没有返回 columns 配置的, 从第一条数据中获取
     else if (Array.isArray(rows.value) && rows.value.length > 0) {
-        cols = Object.keys(props.data.rows[0]).map((item) => {
+        cols = Object.keys(fetchData.value.rows[0]).map((item) => {
             return {
                 label: item,
                 prop: item,
@@ -201,12 +191,10 @@ const columns = computed(() => {
         );
     });
 });
-
 // 从 fetchData 中找到 数据总条数
 const total = computed(() => {
-    return props.data.total || 0;
+    return fetchData.value.total || 0;
 });
-
 // 是否为多选模式
 const multipleMode = computed(() => {
     return (
@@ -214,12 +202,10 @@ const multipleMode = computed(() => {
         columns.value.some((i) => i.component === "selection")
     );
 });
-
 // 从页面配置中找到操作项的配置
 const actions = computed(() => {
-    return props.data.actions || [];
+    return fetchData.value.actions || [];
 });
-
 // 当前操作项, 主要用于打开 dialog 等对话框, 并传递数据.
 // 有值则打开 dialog / slideover
 const currentAction = ref({});
@@ -228,10 +214,11 @@ provide("currentAction", currentAction);
 // 点击操作项
 const clickAction = (action, row = null) => {
     // 完善 action 对象
-    action.path = `${parentUrl.value}/${action.key}`;
+    action.path = `${props.fetchUrl || route.path}/${action.key}`;
+    console.log("route", route);
+    console.log("action", JSON.parse(JSON.stringify(action)));
 
     // 赋值当前行数据
-    // const rows = row ? [row]: selectedRows.value
     if (row) {
         selectedRows.value = [row];
     }
@@ -249,7 +236,7 @@ const clickAction = (action, row = null) => {
             title = action.confirmProps?.title || action.label;
             message = action.confirmProps?.message;
         }
-        const url = action.fetchUrl || action.path;
+        const url = action.fetch?.url || action.path;
         // 整理发送的数据, 从row[]中找query[], 用逗号分割
         let postData = {};
         if (Array.isArray(action.query)) {
@@ -284,8 +271,29 @@ const clickAction = (action, row = null) => {
         return;
     }
 
+    const params = {};
+    if (Array.isArray(action.query)) {
+        action.query.forEach((key) => {
+            const vals = [];
+            selectedRows.value.forEach((row) => {
+                vals.push(row[key]);
+            });
+            params[key] = vals.join(",");
+        });
+    }
+
     // 打开 action 相应的对话框
-    currentAction.value = action;
+    currentAction.value = {
+        key: action.key,
+        label: action.label,
+        component: action.component,
+        showType: action.showType,
+        showTypeProps: action.showTypeProps,
+        fetchUrl:
+            action.fetchUrl || `${props.fetchUrl || route.path}/${action.key}`,
+        fetchType: action.fetchTtype || "get",
+        fetchParams: params,
+    };
 };
 
 // 处理行内操作的禁用状态
@@ -328,8 +336,24 @@ const columnProps = (column) => {
     };
 };
 
+// 获取数据
+const fetchRequest = async () => {
+    // 数据获取地址: 给定值或当前路由
+    const url = props.fetchUrl || route.path;
+    if (!url) {
+        return;
+    }
+    const method = props.fetchType?.toLowerCase() || "get";
+    loading.value = true;
+    const res = await request[method](url, query.value);
+    loading.value = false;
+    if (res.code === 200) {
+        fetchData.value = res.data;
+    }
+};
+
 const fetchList = async () => {
-    await props.fetch();
+    await fetchRequest();
     // 每次刷新, 清除选中的内容
     selectedRows.value = [];
 };
@@ -353,18 +377,22 @@ const handleSelectChange = (val) => {
 // 翻页
 const handlePageChange = (page) => {
     query.value.page = page;
-    props.fetch();
+    fetchRequest();
 };
 // 调整每页显示数量
 const handleSizeChange = (size) => {
     query.value.page = 1;
     query.value.limit = size;
-    props.fetch();
+    fetchRequest();
 };
 
 // 单元格内显示的内容, 支持 parent.child.child 这种方式取json中的值
-const handleShowContent = ({column, row}) => {
+const handleShowContent = ({ column, row }) => {
     // row[column.key]
-    return column.key.split('.').reduce((total, item) => total[item], row)
-}
+    return column.key.split(".").reduce((total, item) => total[item], row);
+};
+
+onMounted(() => {
+    fetchList();
+});
 </script>

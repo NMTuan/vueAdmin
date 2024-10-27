@@ -2,8 +2,8 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-28 11:18:01
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-30 21:07:52
- * @FilePath: \vueAdmin\src\components\action\index.vue
+ * @LastEditTime: 2024-10-27 20:41:04
+ * @FilePath: \ProPayc:\project\vueAdmin\src\components\action\index.vue
  * @Description: 
  * 
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
@@ -19,8 +19,15 @@
                 <ActionForm
                     ref="formEl"
                     v-if="modelValue.component === 'form'"
+                    :fetchUrl="modelValue.fetchUrl"
+                    :fetchParams="modelValue.fetchParams"
                 />
-                <div v-else>没有匹配的组件</div>
+                <ComTable
+                    v-else-if="modelValue.component === 'dataTable'"
+                    :fetchUrl="modelValue.fetchUrl"
+                    :fetchParams="modelValue.fetchParams"
+                />
+                <div v-else>没有匹配的组件: {{ modelValue.component }}</div>
             </div>
             <template #footer>
                 <div class="text-left">
@@ -36,21 +43,11 @@
     </div>
 </template>
 <script setup>
-const props = defineProps({
-    // 操作的配置
-    modelValue: {
-        type: Object,
-        default: () => ({}),
-    },
-});
-const emits = defineEmits(["update:modelValue"]);
-const currentAction = inject("currentAction", {});
-// 注意, 这里是多条数据
-const rows = inject("selectedRows");
+const modelValue = defineModel();
 const thisProps = computed(() => {
-    const vals = props.modelValue.showTypeProps || {};
+    const vals = modelValue.value.showTypeProps || {};
     if (vals.title === undefined) {
-        vals.title = props.modelValue.label;
+        vals.title = modelValue.value.label;
     }
     vals.modelValue = true;
     vals.destroyOnClose = true;
@@ -58,14 +55,14 @@ const thisProps = computed(() => {
         vals.closeOnClickModal === undefined &&
         vals["close-on-click-modal"] === undefined
     ) {
-        vals.closeOnClickModal = !["form"].includes(props.modelValue.component);
+        vals.closeOnClickModal = !["form"].includes(modelValue.value.component);
     }
     if (
         vals.closeOnPressEscape === undefined &&
         vals["close-on-press-escape"] === undefined
     ) {
         vals.closeOnPressEscape = !["form"].includes(
-            props.modelValue.component
+            modelValue.value.component
         );
     }
     return vals;
@@ -85,42 +82,7 @@ const actionBack = (refresh = false) => {
     if (refresh === true) {
         fetchList();
     }
-    emits("update:modelValue", {});
+    modelValue.value = {};
 };
 provide("actionBack", actionBack);
-
-// 获取数据
-const fetch = async () => {
-    const url = props.modelValue.fetchUrl || currentAction.value.path;
-    const method = props.modelValue.fetchType || "get";
-    const query = {};
-    if (Array.isArray(props.modelValue.query)) {
-        props.modelValue.query.forEach((key) => {
-            const vals = [];
-            rows.value.forEach((row) => {
-                vals.push(row[key]);
-            });
-            query[key] = vals.join(",");
-        });
-    }
-
-    loading.value = true;
-    const res = await request[method](url, {
-        ...query,
-        ...(props.modelValue.params || {}),
-    });
-
-    loading.value = false;
-    if (res.code === 200) {
-        fetchData.value = res.data;
-    }
-};
-
-// 自动获取
-if (
-    Object.keys(props.modelValue).length &&
-    !props.modelValue.autoFetch !== false
-) {
-    fetch();
-}
 </script>
