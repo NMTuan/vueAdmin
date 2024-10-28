@@ -2,8 +2,8 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-09-05 05:57:18
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-05 10:02:14
- * @FilePath: \vueAdmin\src\stores\dataTable.ts
+ * @LastEditTime: 2024-10-28 11:06:28
+ * @FilePath: \ProPayc:\project\vueAdmin\src\stores\dataTable.ts
  * @Description:
  *
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved.
@@ -65,6 +65,9 @@ export const useDataTableStore = defineStore(
                             configTableColumnsVals.value[key]
                         )
                     ) {
+                        delete configTableColumnsVals.value[key];
+                    }
+                    if(key.split('__')[1] === 'align' && val[key] === 'left') {
                         delete configTableColumnsVals.value[key];
                     }
                 });

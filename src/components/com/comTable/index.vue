@@ -144,6 +144,10 @@ const props = defineProps({
     },
 });
 const loading = ref(false);
+const fetchUrl = computed(() => {
+    return props.fetchUrl || route.path;
+});
+provide("fetchUrl", fetchUrl);
 const fetchData = ref({});
 provide("fetchData", fetchData);
 
@@ -183,7 +187,7 @@ const columns = computed(() => {
     return cols.filter((col) => {
         return (
             dataTableStore.configTableColumnsVals[
-                `${route.path}__hidden__${col.key}`
+                `${fetchUrl.value}__hidden__${col.key}`
             ] !== true
         );
     });
@@ -290,7 +294,7 @@ const clickAction = (action, row = null) => {
             action.fetchUrl || `${props.fetchUrl || route.path}/${action.key}`,
         fetchType: action.fetchTtype || "get",
         fetchParams: {
-            ...props.fetchParams || {},
+            ...(props.fetchParams || {}),
             ...params,
         },
     };
@@ -325,13 +329,13 @@ const columnProps = (column) => {
     return {
         ...column.props,
         width: dataTableStore.configTableColumnsVals[
-            `${route.path}__width__${column.key}`
+            `${fetchUrl.value}__width__${column.key}`
         ],
         align: dataTableStore.configTableColumnsVals[
-            `${route.path}__align__${column.key}`
+            `${fetchUrl.value}__align__${column.key}`
         ],
         fixed: dataTableStore.configTableColumnsVals[
-            `${route.path}__fixed__${column.key}`
+            `${fetchUrl.value}__fixed__${column.key}`
         ],
     };
 };
@@ -339,13 +343,12 @@ const columnProps = (column) => {
 // 获取数据
 const fetchRequest = async () => {
     // 数据获取地址: 给定值或当前路由
-    const url = props.fetchUrl || route.path;
-    if (!url) {
+    if (!fetchUrl.value) {
         return;
     }
     const method = props.fetchType?.toLowerCase() || "get";
     loading.value = true;
-    const res = await request[method](url, query.value);
+    const res = await request[method](fetchUrl.value, query.value);
     loading.value = false;
     if (res.code === 200) {
         fetchData.value = res.data;
