@@ -32,13 +32,15 @@ const fetchOptions = async () => {
     // 处理查询参数
     let query = {};
     let body = {};
+    const method = field.value.fetchOptions?.method?.toLowerCase() || "get";
+
     // params参数 固定写死的参数, 会同时合并到 get 和 body 参数中
     if (field.value.fetchOptions.params) {
         query = {
             ...query,
             ...field.value.fetchOptions.params,
         };
-        if (field.value.fetchOptions?.method.toLowerCase() === "post") {
+        if (method === "post") {
             body = {
                 ...body,
                 ...field.value.fetchOptions.params,
@@ -59,14 +61,12 @@ const fetchOptions = async () => {
     // }
 
     loading.value = true;
-    const res = await request[
-        field.value.fetchOptions?.method.toLowerCase() || "get"
-    ](
+    const res = await request[method](
         field.value.fetchOptions.url,
         {},
         {
             params: query,
-            body,
+            data: body,
         }
     );
     loading.value = false;
