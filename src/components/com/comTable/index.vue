@@ -1,9 +1,6 @@
 <template>
     <div class="border border-solid border-zinc-200 p-6 bg-white rounded">
-        <!-- <hr>
-        fetchData: <pre>{{ fetchData }}</pre>
-        <hr>
-        loading: {{ loading }} -->
+        fetchParams: {{ fetchParams }}
         <!-- 头部 -->
         <div class="flex items-center justify-between mb-4">
             <!-- 操作区域 -->
@@ -292,7 +289,10 @@ const clickAction = (action, row = null) => {
         fetchUrl:
             action.fetchUrl || `${props.fetchUrl || route.path}/${action.key}`,
         fetchType: action.fetchTtype || "get",
-        fetchParams: params,
+        fetchParams: {
+            ...props.fetchParams || {},
+            ...params,
+        },
     };
 };
 
