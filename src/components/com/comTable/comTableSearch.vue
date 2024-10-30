@@ -2,8 +2,8 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 14:25:00
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-06 05:50:15
- * @FilePath: \vueAdmin\src\components\com\comTable\comTableSearch.vue
+ * @LastEditTime: 2024-10-28 10:17:51
+ * @FilePath: \ProPayc:\project\vueAdmin\src\components\com\comTable\comTableSearch.vue
  * @Description: 
  * 
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
@@ -31,12 +31,7 @@
             </el-button>
             <template #dropdown>
                 <el-dropdown-menu>
-                    <el-dropdown-item
-                        @click="fetchList"
-                        v-if="
-                            Array.isArray(searchFields) && searchFields.length
-                        "
-                    >
+                    <el-dropdown-item @click="fetchList">
                         <i class="ri-refresh-line"></i>
                         刷新列表
                     </el-dropdown-item>

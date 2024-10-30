@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 22:14:12
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-10-27 19:45:07
+ * @LastEditTime: 2024-10-28 20:27:16
  * @FilePath: \ProPayc:\project\vueAdmin\src\components\com\comField\index.vue
  * @Description: 
  * 
@@ -25,7 +25,7 @@ const props = defineProps({
         default: "",
     },
     value: {
-        type: [Number, String],
+        type: [Number, String, Boolean],
         default: "",
     },
     config: {

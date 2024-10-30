@@ -12,21 +12,27 @@
                     "
                     class="flex"
                 >
-                    <el-button
+                    <template
                         v-for="action in actions.filter((i) =>
                             i.positions.includes('top')
                         )"
-                        v-bind="action.props"
-                        @click="clickAction(action)"
-                        :disabled="
-                            handleTopActionDisabled(action.disabled?.top)
-                        "
                     >
-                        <template #icon v-if="action.icon">
-                            <i :class="action.icon"></i>
-                        </template>
-                        {{ action.label }}
-                    </el-button>
+                        <el-button
+                            v-if="
+                                handleTopActionInVisible(action.invisible?.top)
+                            "
+                            v-bind="action.props"
+                            @click="clickAction(action)"
+                            :disabled="
+                                handleTopActionDisabled(action.disabled?.top)
+                            "
+                        >
+                            <template #icon v-if="action.icon">
+                                <i :class="action.icon"></i>
+                            </template>
+                            {{ action.label }}
+                        </el-button>
+                    </template>
                 </div>
             </div>
             <!-- 搜索及其它操作 -->
@@ -51,26 +57,34 @@
                     v-bind="columnProps(column)"
                 >
                     <template #default="{ row }">
-                        <el-button
+                        <template
                             v-for="(action, j) in actions.filter((i) =>
                                 i.positions.includes('row')
                             )"
-                            v-bind="action.props"
-                            size="small"
-                            @click="clickAction(action, row)"
-                            :disabled="
-                                handleRowActionDisabled(
-                                    action.disabled?.row,
-                                    row,
-                                    action
-                                )
-                            "
                         >
-                            <template #icon v-if="action.icon">
-                                <i :class="action.icon"></i>
-                            </template>
-                            {{ action.label }}
-                        </el-button>
+                            <el-button
+                                v-if="
+                                    handleRowActionInVisible(
+                                        action.invisible?.row,
+                                        row
+                                    )
+                                "
+                                v-bind="action.props"
+                                size="small"
+                                @click="clickAction(action, row)"
+                                :disabled="
+                                    handleRowActionDisabled(
+                                        action.disabled?.row,
+                                        row
+                                    )
+                                "
+                            >
+                                <template #icon v-if="action.icon">
+                                    <i :class="action.icon"></i>
+                                </template>
+                                {{ action.label }}
+                            </el-button>
+                        </template>
                     </template>
                 </el-table-column>
                 <!-- element plus 内置特殊列, 不做处理 -->
@@ -314,6 +328,20 @@ const handleRowActionDisabled = (rules, row = {}) => {
     return func(row);
 };
 
+// 处理行内操作的可见性
+const handleRowActionInVisible = (rules, row = {}) => {
+    return !handleRowActionDisabled(rules, row);
+    // if (
+    //     !rules ||
+    //     Object.keys(rules).length === 0 ||
+    //     Object.keys(row).length === 0
+    // ) {
+    //     return true;
+    // }
+    // const func = sift(rules);
+    // return !func(row);
+};
+
 // 处理头部操作的禁用状态
 // 这里是比对 选中行数量
 const handleTopActionDisabled = (rules) => {
@@ -322,6 +350,11 @@ const handleTopActionDisabled = (rules) => {
     }
     const func = sift(rules);
     return func(selectedRows.value.length);
+};
+
+// 处理头部操作的可见性
+const handleTopActionInVisible = (rules) => {
+    return !handleTopActionDisabled(rules);
 };
 
 // 处理列配置项
