@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-06-18 15:56:57
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-10-27 16:49:30
+ * @LastEditTime: 2024-11-02 19:50:57
  * @FilePath: \ProPayc:\project\vueAdmin\src\composables\request.ts
  * @Description:
  *
@@ -55,43 +55,47 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
     (response) => {
         // 如果返回信息有message, 则显示
-        if (response.data.message && !response.headers.mute) {
-            ElMessage[response.data.code === 200 ? "success" : "error"]({
-                message: response.data.message,
-                // description: response.data.description || ''
-            });
-            // notification[response.data.code === 200 ? 'success' : 'error']({
-            //   message: response.data.message,
-            //   description: response.data.description || ''
-            // })
+        if (response.data.message) {
+            if (response.data.showType === "alert") {
+                ElMessageBox.alert(
+                    response.data.message,
+                    response.data.title || "提示",
+                    {
+                        dangerouslyUseHTMLString: true,
+                    }
+                );
+            } else {
+                ElMessage[response.data.code === 200 ? "success" : "error"]({
+                    dangerouslyUseHTMLString: true,
+                    message: response.data.message,
+                    // description: response.data.description || ''
+                });
+            }
         }
         return response;
     },
     (error) => {
-        console.log("mute1", error);
-        // console.log("mute2", error.response.headers.mute);
-        if (error.response && !error.response.headers.mute) {
-            const err = errors[error.response.status];
-            if (err) {
-                ElMessage.error(err.message);
-                // notification.error(err)
-            } else {
-                // console.log('error', error.response.data)
-                // console.log('error1', error.response.data.message)
-                // console.log('error2', error.response.data.statusMessage)
-                ElMessage.error(
-                    `${error.response.status}: ${
-                        error.response.data.message ||
-                        "未知错误，请联系管理员！"
-                    }`
-                );
-                // notification.error({
-                //   message: '未知错误',
-                //   description: `Status:${error.response.status}，未知错误，请联系管理员！`
-                // })
-            }
+        let code = error.code || "";
+        let status = error.status || "";
+        let message = error.message || "";
+
+        if (error.response) {
+            status = error.response.status || status;
+            message = error.response.statusText || message;
         }
-        return Promise.reject(error.response);
+
+        if (error.response && error.response.data) {
+            status = error.response.data.statusCode || status;
+            message =
+                error.response.data.message ||
+                error.response.data.statusMessage ||
+                message;
+        }
+
+        ElMessage.error(
+            `${status} ${code}: ${message || "未知错误，请联系管理员！"}`
+        );
+        return Promise.reject(error);
     }
 );
 
