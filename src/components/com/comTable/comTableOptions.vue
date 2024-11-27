@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 14:25:00
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-10-28 11:04:06
+ * @LastEditTime: 2024-11-26 10:29:25
  * @FilePath: \ProPayc:\project\vueAdmin\src\components\com\comTable\comTableOptions.vue
  * @Description: 
  * 
@@ -109,12 +109,15 @@
 </template>
 <script setup>
 const dataTableStore = useDataTableStore();
-const fetchUrl = inject("fetchUrl", "");
-const fetchData = inject("fetchData", {});
+const parentFetch = inject("parentFetch", {});
+const fetchUrl = computed(() => {
+    return parentFetch.url;
+});
+const fetchData = inject("fetchData", ref({}));
 
 // 表格数据
 const tableData = computed(() => {
-    return fetchData.value.columns.filter((column) => {
+    return fetchData.value.columns?.filter((column) => {
         // 只显示有 key 的列
         return column.key;
     });

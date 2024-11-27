@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-09-05 11:43:41
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-06 05:23:29
+ * @LastEditTime: 2024-11-27 15:13:10
  * @FilePath: \vueAdmin\src\components\com\comField\comFieldTable.vue
  * @Description: 
  * 
@@ -34,38 +34,26 @@ const value = inject("value", "");
 const config = inject("config", {
     key: "",
     showType: "dialog",
-    // fetchUrl: ''
-    fetchType: "get",
     query: [],
     props: {},
 });
-const row = inject("row", {});
-const parentUrl = inject('parentUrl')
-console.log('parentUrl', parentUrl)
-
-// 一层层把自己当前的 url 注入下去
-const fetchUrl = computed(()=>{
-    return config.fetchUrl || parentUrl.value + "/" + config.key;
-})
-provide('parentUrl', fetchUrl)
+const fetch = inject("fetch", {});
 
 // 对话框显示状态
 const dialogVisible = ref(false);
 const loading = ref(false);
 const fetchData = ref({});
 
-const q = config.query.reduce((acc, item) => {
-    acc[item] = row?.[item];
-    return acc;
-}, {});
 const query = ref({
     page: 1,
     limit: 20,
 });
-query.value = { ...q, ...query.value };
+if (fetch.value.method === "get") {
+    query.value = { ...fetch.value.query, ...query.value };
+}
 
 // 临时在这里暂存一下默认查询条件把, 懒得处理了.
-const defaultQuery = JSON.parse(JSON.stringify(query.value));
+// const defaultQuery = JSON.parse(JSON.stringify(query.value));
 // 按钮配置项
 const linkProps = computed(() => {
     return {
@@ -77,7 +65,7 @@ const linkProps = computed(() => {
 const dialogProps = computed(() => {
     return {
         destroyOnClose: true,
-        ...config.showTypeProps,
+        ...config.value.showTypeProps,
         modelValue: dialogVisible.value,
     };
 });
@@ -85,23 +73,10 @@ const dialogProps = computed(() => {
 // 点击按钮
 const handleClick = () => {
     dialogVisible.value = true;
-    fetch();
 };
 
-// 获取数据
-const fetch = async () => {
-    const method = config.fetchType || "get";
-
-    loading.value = true;
-    const res = await request[method](fetchUrl.value, query.value);
-    loading.value = false;
-    if (res.code === 200) {
-        fetchData.value = res.data;
-    }
-};
-
-const handleClosed = ()=>{
-    query.value = JSON.parse(JSON.stringify(defaultQuery));
+const handleClosed = () => {
+    // query.value = JSON.parse(JSON.stringify(defaultQuery));
     dialogVisible.value = false;
-}
+};
 </script>

@@ -2,8 +2,8 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 19:59:47
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-06 11:44:00
- * @FilePath: \vueAdmin\src\components\layout\index.vue
+ * @LastEditTime: 2024-11-11 11:03:13
+ * @FilePath: \ProPayc:\project\vueAdmin\src\components\layout\index.vue
  * @Description: 
  * 
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
@@ -24,12 +24,12 @@
             <Tabs class="h-10 overflow-hidden sticky top-16 z-10" />
             <div class="p-6">
                 <slot />
-                <pre class="mt-6">pageConfig: {{ pageConfig }}</pre>
+                <Echo>pageConfig: {{ pageConfig }}</Echo>
             </div>
             <!-- <div class="bg-purple-200 sticky bottom-0">footer</div> -->
         </div>
     </div>
 </template>
 <script setup>
-const pageConfig = inject('pageConfig', {})
+const pageConfig = inject("pageConfig", {});
 </script>

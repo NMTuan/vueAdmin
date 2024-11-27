@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-09-03 05:23:48
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-06 05:19:21
+ * @LastEditTime: 2024-11-27 14:52:38
  * @FilePath: \vueAdmin\src\components\com\comField\comFieldDetail.vue
  * @Description: 
  * 
@@ -10,7 +10,10 @@
 -->
 <template>
     <div>
-        <el-link v-bind="linkProps" @click="handleClick">
+        <el-link
+            v-bind="linkProps"
+            @click="handleClick"
+        >
             {{ value }}
         </el-link>
         <ComDialogModal
@@ -19,28 +22,19 @@
             :thisProps="dialogProps"
             :closed="() => (dialogVisible = false)"
         >
-            <ComDetail :fields="fields" :row="fetchData" v-loading="loading" />
+            <ComDetail
+                :fields="fields"
+                :row="fetchData"
+                v-loading="loading"
+            />
         </ComDialogModal>
     </div>
 </template>
 <script setup>
-const route = useRoute();
 const value = inject("value", "");
-const config = inject("config", {
-    key: "",
-    showType: "dialog",
-    // fetchUrl: ''
-    fetchType: "get",
-    query: [],
-    props: {},
-});
-const row = inject("row", {});
-const parentUrl = inject('parentUrl')
-console.log('parentUrl', parentUrl.value)
-const fetchUrl = computed(()=>{
-    return config.fetchUrl || `${parentUrl.value}/${config.key}`
-})
-provide('parentUrl', fetchUrl)
+const config = inject("config", {});
+const fetch = inject("fetch", {});
+
 
 // 对话框显示状态
 const dialogVisible = ref(false);
@@ -72,7 +66,7 @@ const linkProps = computed(() => {
 // 对话框配置
 const dialogProps = computed(() => {
     return {
-        ...config.showTypeProps,
+        ...config.value.showTypeProps,
         modelValue: dialogVisible.value,
     };
 });
@@ -80,20 +74,13 @@ const dialogProps = computed(() => {
 // 点击按钮
 const handleClick = () => {
     dialogVisible.value = true;
-    fetch();
+    fetchRequest();
 };
 
 // 获取数据
-const fetch = async () => {
-    const method = config.fetchType || "get";
-    const query = config.query.reduce((acc, item) => {
-        acc[item] = row?.[item];
-        return acc;
-    }, {});
-    loading.value = true;
-    const res = await request[method](fetchUrl.value, query);
-    loading.value = false;
-    if (res.code === 200) {
+const fetchRequest = async () => {
+    const res = await utils.fetch(fetch.value, loading);
+    if(res.code === 200) {
         fetchData.value = res.data;
     }
 };

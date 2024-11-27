@@ -2,14 +2,17 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-09-05 11:05:25
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-05 11:11:11
+ * @LastEditTime: 2024-11-27 13:53:09
  * @FilePath: \vueAdmin\src\components\com\comDetail\index.vue
  * @Description: 
  * 
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
 -->
 <template>
-    <el-descriptions :column="1" border>
+    <el-descriptions
+        :column="1"
+        border
+    >
         <el-descriptions-item
             v-for="field in fields"
             :label="field.label"
@@ -17,8 +20,9 @@
         >
             <ComField
                 v-if="field.component"
-                :type="field.component"
+                :component="field.component"
                 :value="row.data[field.key]"
+                :fetch="handleFieldFetch({ column: field, row: row.data })"
                 :config="field"
                 :row="row.data"
             />
@@ -41,4 +45,19 @@ const props = defineProps({
         default: () => {},
     },
 });
+const handleFieldFetch = ({ column, row }) => {
+    if (!column.fetch) {
+        return {};
+    }
+    const params = {};
+    if (column.fetch?.query) {
+        column.fetch.query.forEach((key) => {
+            params[key] = row[key];
+        });
+    }
+    return {
+        url: column.fetch?.url,
+        params,
+    };
+};
 </script>
