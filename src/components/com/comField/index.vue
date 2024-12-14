@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 22:14:12
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-11-27 15:15:25
+ * @LastEditTime: 2024-12-14 17:55:26
  * @FilePath: \vueAdmin\src\components\com\comField\index.vue
  * @Description: 
  * 
@@ -58,17 +58,9 @@ provide(
     "row",
     computed(() => props.row),
 );
-
-const fetchParams = {};
-if (Array.isArray(props.config.fetch?.query)) {
-    props.config.fetch.query.forEach((key) => {
-        fetchParams[key] = props.row[key];
-    });
-}
-
 const fetch = ref({
     url: props.config.fetch?.url,
-    params: fetchParams,
+    params: utils.handleParams(props.config.fetch?.params, props.row),
     config: props.config.fetch?.config,
 });
 provide("fetch", fetch);

@@ -8,14 +8,14 @@ export default ({ url, params, data, config }, submitData, loading) => {
             return reject("submit url is required");
         }
         const fetchMethod = "post";
-        const fetchQuery = {
+        const fetchParams = {
             ...unref(params),
         };
         const fetchBody = {
             ...unref(data),
             ...unref(submitData),
         };
-        const fetchConfig = { params: fetchQuery, ...unref(config) };
+        const fetchConfig = { params: fetchParams, ...unref(config) };
         loading.value = true;
         request[fetchMethod](url, fetchBody, fetchConfig)
             .then((res) => {

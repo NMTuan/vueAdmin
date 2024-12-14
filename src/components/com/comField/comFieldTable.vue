@@ -29,7 +29,6 @@
     </div>
 </template>
 <script setup>
-const route = useRoute();
 const value = inject("value", "");
 const config = inject("config", {
     key: "",

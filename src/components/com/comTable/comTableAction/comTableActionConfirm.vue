@@ -1,8 +1,7 @@
 <template>
-        <div class="flex items-center">
-            <!-- <div class="mr-1" :class="icon"></div> -->
-            {{ message }}
-            </div>
+    <div class="flex items-center">
+        {{ message }}
+    </div>
 </template>
 <script setup>
 const props = defineProps({
@@ -10,13 +9,9 @@ const props = defineProps({
         type: String,
         default: "",
     },
-    // icon: {
-    //     type: String,
-    //     default: "",
+    // submit: {
+    //     type: Object,
+    //     default: () => ({}),
     // },
-    submit: {
-        type: Object,
-        default: () => ({}),
-    },
 });
 </script>

@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-28 11:18:01
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-11-26 14:34:07
+ * @LastEditTime: 2024-12-13 11:22:02
  * @FilePath: \ProPayc:\project\vueAdmin\src\components\action\index.vue
  * @Description: 
  * 
@@ -30,7 +30,7 @@
             />
             <ComTableActionConfirm
                 v-else-if="modelValue.component === 'confirm'"
-                v-bind="modelValue.confirmProps"
+                v-bind="modelValue.componentProps"
                 :submit="modelValue.submit"
             />
             <div v-else>没有匹配的组件: {{ modelValue.component }}</div>

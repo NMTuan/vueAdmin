@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-10-18 13:07:22
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-11-27 15:16:55
+ * @LastEditTime: 2024-12-14 18:53:48
  * @FilePath: \ProPayc:\project\vueAdmin\src\components\com\comTable\index.vue
  * @Description: 
  * 
@@ -12,6 +12,8 @@
     <div class="border border-solid border-zinc-200 p-6 bg-white rounded">
         <Echo>fetchQuery: {{ fetchQuery }}</Echo>
         <Echo>fetch: {{ fetch }}</Echo>
+        <Echo>fetchQuery: {{ fetchQuery }}</Echo>
+        
         <!-- 头部 -->
         <div class="flex items-center justify-between mb-4">
             <!-- 操作区域 -->
@@ -134,10 +136,7 @@ const props = defineProps({
         type: Object,
         default: () => ({
             url: "",
-            method: "get",
-            query: {},
             params: {},
-            body: {},
             config: {},
         }),
     },
@@ -150,8 +149,7 @@ provide("parentFetch", props.fetch);
 const fetchData = ref({});
 provide("fetchData", fetchData);
 const fetchQuery = ref({
-    ...props.fetch.query,
-    ...props.fetch.params,
+    ...utils.handleParams(props.fetch.params),
     page: 1,
     limit: 10,
 });
@@ -238,7 +236,7 @@ const fetchRequest = async () => {
         {
             ...props.fetch,
             url: fetchUrl.value,
-            query: fetchQuery.value,
+            params: fetchQuery.value,
         },
         loading,
     );
@@ -280,7 +278,7 @@ const handleSizeChange = (size) => {
 // 单元格内显示的内容, 支持 parent.child.child 这种方式取json中的值
 const handleShowContent = ({ column, row }) => {
     // row[column.key]
-    return column.key.split(".").reduce((total, item) => total[item], row);
+    return utils.getNestedValue(row, column.key);
 };
 
 // 单元格内的 fetch 请求配置
@@ -288,8 +286,6 @@ const handleFieldFetch = ({ column, row }) => {
     if (!column.fetch) {
         return {};
     }
-    console.log("column", column);
-    console.log("row", row);
     const params = {};
     if (column.fetch?.query) {
         column.fetch.query.forEach((key) => {
@@ -298,8 +294,8 @@ const handleFieldFetch = ({ column, row }) => {
     }
     return {
         url: column.url,
-        params
-    }
+        params,
+    };
 };
 
 onMounted(() => {

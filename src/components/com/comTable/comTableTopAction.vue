@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-11-10 11:43:44
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-11-26 13:10:52
+ * @LastEditTime: 2024-12-14 16:11:22
  * @FilePath: \ProPayc:\project\vueAdmin\src\components\com\comTable\comTableTopAction .vue
  * @Description: 表格头部操作按钮
  * 
@@ -25,8 +25,6 @@
     </el-button>
 </template>
 <script setup>
-import submit from "@/composables/utils/submit";
-
 const parentFetch = inject("parentFetch", {});
 
 const props = defineProps({
@@ -68,75 +66,47 @@ const handleVisible = () => {
 
 // 点击操作
 const handleClick = () => {
-    const fetchParams = {};
-    // 基于 row 和 action.query 构建 fetchParams 参数
-    if (Array.isArray(props.action.fetch?.query)) {
-        props.action.fetch.query.forEach((key) => {
-            const vals = [];
-            props.rows.forEach((row) => {
-                vals.push(row[key]);
-            });
-            fetchParams[key] = vals.join(",");
-        });
-    }
+    const url = [parentFetch.url, props.action.key].join("/");
 
-    const submitParams = {};
-    if (Array.isArray(props.action.submit?.params)) {
-        props.action.submit.params.forEach((key) => {
-            const vals = [];
-            props.rows.forEach((row) => {
-                vals.push(row[key]);
-            });
-            submitParams[key] = vals.join(",");
-        });
-    }
-    const submitData = {};
-    if (Array.isArray(props.action.submit?.body)) {
-        props.action.submit.body.forEach((key) => {
-            const vals = [];
-            props.rows.forEach((row) => {
-                vals.push(row[key]);
-            });
-            submitData[key] = vals.join(",");
-        });
-    }
+    // 请求配置
+    const fetch = {
+        url: props.action.fetch?.url || url,
+        params: {
+            ...parentFetch.params,
+            ...utils.handleParams(props.action.fetch?.params, props.rows),
+        },
+        config: {
+            ...props.action.fetch?.config,
+        },
+    };
+    // 提交配置, 如果没有配置submit, 则使用fetch的配置
+    const submit =
+        props.action.submit === undefined
+            ? fetch
+            : {
+                  url: props.action.submit?.url || url,
+                  params: {
+                      ...parentFetch.params,
+                      ...utils.handleParams(
+                          props.action.submit?.params,
+                          props.rows,
+                      ),
+                  },
+                  data: {
+                      ...utils.handleParams(
+                          props.action.submit?.data,
+                          props.rows,
+                      ),
+                  },
+                  config: {
+                      ...props.action.submit?.config,
+                  },
+              };
 
     currentAction.value = {
         ...props.action,
-        fetch: {
-            // url 规则:
-            // 给定值, 或者基于父级组件注入的 baseUrl 加上当前操作的 key
-            url:
-                props.action.fetch?.url ||
-                [parentFetch.url, props.action.key].join("/"),
-            params: {
-                ...parentFetch.params,
-                ...props.action.fetch?.params,
-                ...fetchParams,
-            },
-            config: {
-                ...props.action.fetch?.config,
-            },
-        },
-        submit: {
-            // url 规则:
-            // 给定值, 或者基于父级组件注入的 baseUrl 加上当前操作的 key
-            url:
-                props.action.submit?.url ||
-                [parentFetch.url, props.action.key].join("/"),
-            params: {
-                ...parentFetch.params,
-                ...props.action.submit?.params,
-                ...submitParams,
-            },
-            data: {
-                ...props.action.submit?.data,
-                ...submitData,
-            },
-            config: {
-                ...props.action.submit?.config,
-            },
-        },
+        fetch,
+        submit,
     };
 };
 </script>
