@@ -49,7 +49,7 @@ export const useUserStore = defineStore("user", () => {
                         }
                         return acc;
                     },
-                    []
+                    [],
                 );
             }
             return [];
@@ -58,13 +58,15 @@ export const useUserStore = defineStore("user", () => {
     });
 
     // 登录
-    const login = async (formData: any) => {
+    const login = async (formData: any, loading: Ref<boolean>) => {
+        loading.value = true;
         const res = (await request.post("/auth/login", formData, {
             headers: {
                 useToken: false,
             },
         })) as Res;
         if (res.code !== 200) {
+            loading.value = false;
             return;
         }
         token.value = res.data.token;
@@ -96,7 +98,7 @@ export const useUserStore = defineStore("user", () => {
                         headers: {
                             mute: mute,
                         },
-                    }
+                    },
                 )
                 .then((res) => {
                     user.value = res.data;
