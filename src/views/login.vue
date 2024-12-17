@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 18:06:50
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-12-16 13:31:23
+ * @LastEditTime: 2024-12-16 13:54:16
  * @FilePath: \ProPayAdmin\src\views\login.vue
  * @Description: 
  * 
@@ -18,9 +18,17 @@
         </div>
         <div class="bg-white shadow-sm rounded p-12">
             <div class="mb-6 text-center">
-                <p class="text-3xl text-zinc-800 mb-6">欢迎登录</p>
-                <p class="text-zinc-500 mb-6 text-sm">
-                    『零』前端开发的数据管理后台
+                <p
+                    v-if="env.VITE_LOGIN_TITLE"
+                    class="text-3xl text-zinc-800 mb-6"
+                >
+                    {{ env.VITE_LOGIN_TITLE }}
+                </p>
+                <p
+                    v-if="env.VITE_LOGIN_DESC"
+                    class="text-zinc-500 mb-6 text-sm"
+                >
+                    {{ env.VITE_LOGIN_DESC }}
                 </p>
             </div>
             <div class="w-320px mx-auto">
@@ -100,6 +108,8 @@ const rules = ref({
     username: [{ required: true, message: "请输入用户名" }],
     password: [{ required: true, message: "请输入密码" }],
 });
+
+const env = import.meta.env;
 
 const login = async () => {
     if (!formRef.value) {

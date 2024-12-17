@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-25 19:59:47
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-11-11 11:03:13
+ * @LastEditTime: 2024-12-17 13:51:46
  * @FilePath: \ProPayc:\project\vueAdmin\src\components\layout\index.vue
  * @Description: 
  * 
@@ -16,7 +16,6 @@
             <Logo class="sticky top-0 z-1" />
             <el-scrollbar class="h-full">
                 <Sidebar />
-                <div v-for="i in 100">{{ i }}</div>
             </el-scrollbar>
         </div>
         <div class="flex-1 flex-col overflow-y-auto">

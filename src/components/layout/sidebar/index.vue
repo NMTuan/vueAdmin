@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-26 13:43:50
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-26 16:01:50
+ * @LastEditTime: 2024-12-17 13:52:46
  * @FilePath: \vueAdmin\src\components\layout\sidebar\index.vue
  * @Description: 
  * 
@@ -13,6 +13,7 @@
         v-if="userStore.menu"
         :default-active="defaultActive"
         :default-openeds="defaultOpeneds"
+        class="border-r-0"
     >
         <MenuItems :children="userStore.menu" />
     </el-menu>
