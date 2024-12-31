@@ -8,6 +8,13 @@ export const useUserStore = defineStore("user", () => {
         menu: [],
         topbar: [],
         notice: "",
+        site: {
+            title: "",
+            logo: "",
+        },
+    });
+    const site = computed(() => {
+        return user.value.site;
     });
     const token = ref("");
     if (localStorage.getItem("vueAdminToken")) {
@@ -49,7 +56,7 @@ export const useUserStore = defineStore("user", () => {
                         }
                         return acc;
                     },
-                    []
+                    [],
                 );
             }
             return [];
@@ -58,13 +65,15 @@ export const useUserStore = defineStore("user", () => {
     });
 
     // 登录
-    const login = async (formData: any) => {
+    const login = async (formData: any, loading: Ref<boolean>) => {
+        loading.value = true;
         const res = (await request.post("/auth/login", formData, {
             headers: {
                 useToken: false,
             },
         })) as Res;
         if (res.code !== 200) {
+            loading.value = false;
             return;
         }
         token.value = res.data.token;
@@ -84,7 +93,7 @@ export const useUserStore = defineStore("user", () => {
             return false;
         }
         return new Promise((resolve, reject) => {
-            if (user.value.id) {
+            if (user.value.id || user.value.name || user.value.menu.length) {
                 resolve(true);
                 return;
             }
@@ -96,7 +105,7 @@ export const useUserStore = defineStore("user", () => {
                         headers: {
                             mute: mute,
                         },
-                    }
+                    },
                 )
                 .then((res) => {
                     user.value = res.data;
@@ -122,6 +131,7 @@ export const useUserStore = defineStore("user", () => {
     });
     return {
         user,
+        site,
         menu,
         menuFlat,
         topbar,

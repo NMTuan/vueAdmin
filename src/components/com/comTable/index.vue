@@ -1,5 +1,19 @@
+<!--
+ * @Author: nmtuan nmtuan@qq.com
+ * @Date: 2024-10-18 13:07:22
+ * @LastEditors: nmtuan nmtuan@qq.com
+ * @LastEditTime: 2024-12-14 18:53:48
+ * @FilePath: \ProPayc:\project\vueAdmin\src\components\com\comTable\index.vue
+ * @Description: 
+ * 
+ * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
+-->
 <template>
     <div class="border border-solid border-zinc-200 p-6 bg-white rounded">
+        <Echo>fetchQuery: {{ fetchQuery }}</Echo>
+        <Echo>fetch: {{ fetch }}</Echo>
+        <Echo>fetchQuery: {{ fetchQuery }}</Echo>
+        
         <!-- 头部 -->
         <div class="flex items-center justify-between mb-4">
             <!-- 操作区域 -->
@@ -11,27 +25,22 @@
                     "
                     class="flex"
                 >
-                    <el-button
+                    <ComTableTopAction
                         v-for="action in actions.filter((i) =>
-                            i.positions.includes('top')
+                            i.positions.includes('top'),
                         )"
-                        v-bind="action.props"
-                        @click="clickAction(action)"
-                        :disabled="
-                            handleTopActionDisabled(action.disabled?.top)
-                        "
-                    >
-                        <template #icon v-if="action.icon">
-                            <i :class="action.icon"></i>
-                        </template>
-                        {{ action.label }}
-                    </el-button>
+                        :action="action"
+                        :rows="selectedRows"
+                        v-model="currentAction"
+                    />
                 </div>
             </div>
             <!-- 搜索及其它操作 -->
-            <ComTableSearch />
+            <ComTableSearch
+                v-model:query="fetchQuery"
+                v-model:fetchData="fetchData"
+            />
         </div>
-
         <el-table
             :data="rows"
             stripe
@@ -51,26 +60,14 @@
                     v-bind="columnProps(column)"
                 >
                     <template #default="{ row }">
-                        <el-button
+                        <ComTableRowAction
                             v-for="(action, j) in actions.filter((i) =>
-                                i.positions.includes('row')
+                                i.positions.includes('row'),
                             )"
-                            v-bind="action.props"
-                            size="small"
-                            @click="clickAction(action, row)"
-                            :disabled="
-                                handleRowActionDisabled(
-                                    action.disabled?.row,
-                                    row,
-                                    action
-                                )
-                            "
-                        >
-                            <template #icon v-if="action.icon">
-                                <i :class="action.icon"></i>
-                            </template>
-                            {{ action.label }}
-                        </el-button>
+                            :row="row"
+                            :action="action"
+                            v-model="currentAction"
+                        />
                     </template>
                 </el-table-column>
                 <!-- element plus 内置特殊列, 不做处理 -->
@@ -94,13 +91,19 @@
                         <!-- <slot :name="`column_${column.key}`"> -->
                         <ComField
                             v-if="column.component"
-                            :type="column.component"
-                            :value="row[column.key]"
+                            :component="column.component"
+                            :value="handleShowContent({ column, row })"
+                            :fetch="
+                                handleFieldFetch({
+                                    column,
+                                    row,
+                                })
+                            "
                             :config="column"
                             :row="row"
                         />
                         <template v-else>
-                            {{ row[column.key] }}
+                            {{ handleShowContent({ column, row }) }}
                         </template>
                         <!-- </slot> -->
                     </template>
@@ -110,8 +113,8 @@
         <!-- 分页 -->
         <el-pagination
             background
-            v-model:current-page="query.page"
-            v-model:page-size="query.limit"
+            v-model:current-page="fetchQuery.page"
+            v-model:page-size="fetchQuery.limit"
             :total="total"
             :layout="'prev, pager, next, ->, total, sizes'"
             class="py-6 -mb-6 sticky bottom-0 z-8 bg-white"
@@ -120,53 +123,37 @@
         >
         </el-pagination>
         <!-- 操作项的弹窗 -->
-        <Action
+        <comTableAction
             v-if="Object.keys(currentAction).length"
             v-model="currentAction"
         />
     </div>
 </template>
 <script setup>
-const route = useRoute();
 const dataTableStore = useDataTableStore();
 const props = defineProps({
-    // 数据加载状态
-    loading: {
-        type: Boolean,
-        default: false,
-    },
-    query: {
+    fetch: {
         type: Object,
         default: () => ({
-            page: 1,
-            limit: 10,
+            url: "",
+            params: {},
+            config: {},
         }),
     },
-    // 数据接口返回的数据
-    data: {
-        type: Object,
-        default: () => {},
-    },
-    // 异步加载数据的方法
-    fetch: {
-        type: Function,
-        default: () => {},
-    },
 });
-const fetchData = computed(() => {
-    return props.data;
+const fetchUrl = computed(() => {
+    return props.fetch.url;
 });
+provide("baseUrl", fetchUrl);
+provide("parentFetch", props.fetch);
+const fetchData = ref({});
 provide("fetchData", fetchData);
-const parentUrl = inject("parentUrl", route.path);
-
-const query = defineModel("query", {
-    type: Object,
-    default: () => ({
-        page: 1,
-        limit: 10,
-    }),
+const fetchQuery = ref({
+    ...utils.handleParams(props.fetch.params),
+    page: 1,
+    limit: 10,
 });
-provide("query", query);
+const loading = ref(false);
 
 // 选中的行
 const selectedRows = ref([]);
@@ -174,17 +161,17 @@ provide("selectedRows", selectedRows);
 
 // 从 fetchData 中找到 行数据
 const rows = computed(() => {
-    return props.data.rows || [];
+    return fetchData.value.rows || [];
 });
 // 从 fetchData 中找到 列数据
 const columns = computed(() => {
     let cols = [];
-    if (props.data.columns && Array.isArray(props.data.columns)) {
-        cols = props.data.columns || [];
+    if (fetchData.value.columns && Array.isArray(fetchData.value.columns)) {
+        cols = fetchData.value.columns || [];
     }
     // 没有返回 columns 配置的, 从第一条数据中获取
     else if (Array.isArray(rows.value) && rows.value.length > 0) {
-        cols = Object.keys(props.data.rows[0]).map((item) => {
+        cols = Object.keys(fetchData.value.rows[0]).map((item) => {
             return {
                 label: item,
                 prop: item,
@@ -193,21 +180,18 @@ const columns = computed(() => {
     }
 
     // 按照配置, 隐藏不必要的列
-    // TODO 由于有弹窗 table, 可能跟当前页面table冲突
     return cols.filter((col) => {
         return (
             dataTableStore.configTableColumnsVals[
-                `${route.path}__hidden__${col.key}`
+                `${fetchUrl.value}__hidden__${col.key}`
             ] !== true
         );
     });
 });
-
 // 从 fetchData 中找到 数据总条数
 const total = computed(() => {
-    return props.data.total || 0;
+    return fetchData.value.total || 0;
 });
-
 // 是否为多选模式
 const multipleMode = computed(() => {
     return (
@@ -215,131 +199,61 @@ const multipleMode = computed(() => {
         columns.value.some((i) => i.component === "selection")
     );
 });
-
 // 从页面配置中找到操作项的配置
 const actions = computed(() => {
-    return props.data.actions || [];
+    return fetchData.value.actions || [];
 });
-
 // 当前操作项, 主要用于打开 dialog 等对话框, 并传递数据.
 // 有值则打开 dialog / slideover
 const currentAction = ref({});
 provide("currentAction", currentAction);
 
-// 点击操作项
-const clickAction = (action, row = null) => {
-    // 完善 action 对象
-    action.path = `${parentUrl.value}/${action.key}`;
-
-    // 赋值当前行数据
-    // const rows = row ? [row]: selectedRows.value
-    if (row) {
-        selectedRows.value = [row];
-    }
-
-    // 二次确认, 一般用于删除操作
-    if (action.component === "confirm") {
-        // 如果没有 message，则 message = title，title = label
-        // 否则 title=title message=message
-        let title = "",
-            message = "";
-        if (!action.confirmProps.message) {
-            message = action.confirmProps?.title;
-            title = action.label;
-        } else {
-            title = action.confirmProps?.title || action.label;
-            message = action.confirmProps?.message;
-        }
-        const url = action.fetchUrl || action.path;
-        // 整理发送的数据, 从row[]中找query[], 用逗号分割
-        let postData = {};
-        if (Array.isArray(action.query)) {
-            action.query.forEach((key) => {
-                const vals = [];
-                selectedRows.value.forEach((row) => {
-                    vals.push(row[key]);
-                });
-                postData[key] = vals.join(",");
-            });
-        } else {
-            postData = selectedRows.value;
-        }
-
-        ElMessageBox.confirm(message, title, {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            beforeClose: async (action, instance, done) => {
-                if (action === "confirm") {
-                    instance.confirmButtonLoading = true;
-                    const res = await request.post(url, postData);
-                    if (res.code === 200) {
-                        done();
-                        // reload
-                        props.fetch();
-                    }
-                } else {
-                    done();
-                }
-            },
-        });
-        return;
-    }
-
-    // 打开 action 相应的对话框
-    currentAction.value = action;
-};
-
-// 处理行内操作的禁用状态
-// 这里是比对 row 中的 key/value
-const handleRowActionDisabled = (rules, row = {}) => {
-    if (
-        !rules ||
-        Object.keys(rules).length === 0 ||
-        Object.keys(row).length === 0
-    ) {
-        return;
-    }
-    const func = sift(rules);
-    return func(row);
-};
-
-// 处理头部操作的禁用状态
-// 这里是比对 选中行数量
-const handleTopActionDisabled = (rules) => {
-    if (!rules || Object.keys(rules).length === 0) {
-        return;
-    }
-    const func = sift(rules);
-    return func(selectedRows.value.length);
-};
-
 // 处理列配置项
 const columnProps = (column) => {
     return {
         ...column.props,
-        width: dataTableStore.configTableColumnsVals[
-            `${route.path}__width__${column.key}`
-        ],
-        align: dataTableStore.configTableColumnsVals[
-            `${route.path}__align__${column.key}`
-        ],
-        fixed: dataTableStore.configTableColumnsVals[
-            `${route.path}__fixed__${column.key}`
-        ],
+        width:
+            column.props?.width ||
+            dataTableStore.configTableColumnsVals[
+                `${fetchUrl.value}__width__${column.key}`
+            ],
+        align:
+            column.props?.align ||
+            dataTableStore.configTableColumnsVals[
+                `${fetchUrl.value}__align__${column.key}`
+            ],
+        fixed:
+            column.props?.fixed ||
+            dataTableStore.configTableColumnsVals[
+                `${fetchUrl.value}__fixed__${column.key}`
+            ],
     };
 };
 
-const fetchList = async () => {
-    return await props.fetch();
+// 获取数据
+const fetchRequest = async () => {
+    const res = await utils.fetch(
+        {
+            ...props.fetch,
+            url: fetchUrl.value,
+            params: fetchQuery.value,
+        },
+        loading,
+    );
+    fetchData.value = res.data;
+    // 清除掉选中的行
+    selectedRows.value = [];
 };
-provide("fetchList", fetchList);
+provide("fetchList", fetchRequest);
 
 // 单选 记录选中数据
 const handleCurrentChange = (val) => {
     if (multipleMode.value) {
         return;
     }
-    selectedRows.value = [val];
+    if (val) {
+        selectedRows.value = [val];
+    }
 };
 // 多选 记录选中数据
 const handleSelectChange = (val) => {
@@ -351,13 +265,40 @@ const handleSelectChange = (val) => {
 
 // 翻页
 const handlePageChange = (page) => {
-    query.value.page = page;
-    props.fetch();
+    fetchQuery.value.page = page;
+    fetchRequest();
 };
 // 调整每页显示数量
 const handleSizeChange = (size) => {
-    query.value.page = 1;
-    query.value.limit = size;
-    props.fetch();
+    fetchQuery.value.page = 1;
+    fetchQuery.value.limit = size;
+    fetchRequest();
 };
+
+// 单元格内显示的内容, 支持 parent.child.child 这种方式取json中的值
+const handleShowContent = ({ column, row }) => {
+    // row[column.key]
+    return utils.getNestedValue(row, column.key);
+};
+
+// 单元格内的 fetch 请求配置
+const handleFieldFetch = ({ column, row }) => {
+    if (!column.fetch) {
+        return {};
+    }
+    const params = {};
+    if (column.fetch?.query) {
+        column.fetch.query.forEach((key) => {
+            params[key] = row[key];
+        });
+    }
+    return {
+        url: column.url,
+        params,
+    };
+};
+
+onMounted(() => {
+    fetchRequest();
+});
 </script>

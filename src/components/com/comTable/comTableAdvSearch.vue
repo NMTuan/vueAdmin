@@ -2,8 +2,8 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 14:25:00
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-05 10:14:24
- * @FilePath: \vueAdmin\src\components\page\dataTable\dataTableAdvSearch.vue
+ * @LastEditTime: 2024-11-26 13:21:44
+ * @FilePath: \vueAdmin\src\components\com\comTable\comTableAdvSearch.vue
  * @Description: 
  * 
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
@@ -37,8 +37,14 @@
     </ComDialogModal>
 </template>
 <script setup>
-const fetchData = inject("fetchData", {});
-const query = inject("query", {});
+const fetchData = defineModel("fetchData", {
+    type: Object,
+    default: () => ({}),
+});
+const query = defineModel("query", {
+    type: Object,
+    default: () => ({}),
+});
 const fetchList = inject("fetchList", () => {});
 const handleReset = inject("handleReset", () => {});
 
@@ -64,12 +70,8 @@ const reset = () => {
 const open = () => {
     advSearchVisiable.value = true;
 };
-// 关闭
-// const close = () => {
-//     advSearchVisiable.value = false;
-// };
+
 defineExpose({
     open,
-    //  close
 });
 </script>

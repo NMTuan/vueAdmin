@@ -2,7 +2,7 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 14:25:00
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-06 05:50:15
+ * @LastEditTime: 2024-11-06 15:37:39
  * @FilePath: \vueAdmin\src\components\com\comTable\comTableSearch.vue
  * @Description: 
  * 
@@ -11,10 +11,10 @@
 <template>
     <div class="flex items-center ml-3">
         <!-- 搜索 -->
-        <template v-if="Array.isArray(searchFields) && searchFields.length">
+        <template v-if="Array.isArray(fetchData.search) && fetchData.search.length">
             <ComForm
                 v-model="query"
-                :fields="searchFields"
+                :fields="fetchData.search"
                 :formProps="{
                     labelPosition: 'left',
                     inline: true,
@@ -31,12 +31,7 @@
             </el-button>
             <template #dropdown>
                 <el-dropdown-menu>
-                    <el-dropdown-item
-                        @click="fetchList"
-                        v-if="
-                            Array.isArray(searchFields) && searchFields.length
-                        "
-                    >
+                    <el-dropdown-item @click="fetchList">
                         <i class="ri-refresh-line"></i>
                         刷新列表
                     </el-dropdown-item>
@@ -53,7 +48,7 @@
                     <el-dropdown-item
                         @click="handleReset"
                         v-if="
-                            Array.isArray(searchFields) && searchFields.length
+                            Array.isArray(fetchData.search) && fetchData.search.length
                         "
                     >
                         <i class="ri-reset-left-line"></i>
@@ -82,19 +77,24 @@
             v-if="
                 Array.isArray(fetchData.advSearch) && fetchData.advSearch.length
             "
+            v-model:query="query"
+            v-model:fetchData="fetchData"
         />
         <ComTableOptions ref="tableOptionsRef" />
     </div>
 </template>
 <script setup>
-const fetchData = inject("fetchData", {});
-const query = inject("query", {});
+const fetchData = defineModel("fetchData", {
+    type: Object,
+    default: () => {},
+});
+const query = defineModel("query", {
+    type: Object,
+    default: () => {},
+});
 // 暂存一下查询条件, 供 reset 使用
 const defaultQuery = JSON.stringify(query.value);
 const fetchList = inject("fetchList", () => {});
-const searchFields = computed(() => {
-    return fetchData.value.search || null;
-});
 
 // 高级搜索 ref
 const advSearchRef = ref(null);
@@ -105,6 +105,12 @@ const tableOptionsRef = ref(null);
 // 点击搜索
 const handleSearch = () => {
     query.page = 1;
+    // 清掉空值的key
+    Object.keys(query.value).forEach((key) => {
+        if (query.value[key] === "") {
+            delete query.value[key];
+        }
+    })
     fetchList();
 };
 // 重置搜索

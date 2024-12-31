@@ -2,8 +2,8 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-30 14:25:00
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-09-05 09:56:39
- * @FilePath: \vueAdmin\src\components\page\dataTable\dataTableOptions.vue
+ * @LastEditTime: 2024-11-26 10:29:25
+ * @FilePath: \ProPayc:\project\vueAdmin\src\components\com\comTable\comTableOptions.vue
  * @Description: 
  * 
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved. 
@@ -35,7 +35,7 @@
                         <el-checkbox
                             v-model="
                                 dataTableStore.configTableColumnsVals[
-                                    `${$route.path}__${column.key}__${row.key}`
+                                    `${fetchUrl}__${column.key}__${row.key}`
                                 ]
                             "
                             :disabled="
@@ -49,7 +49,7 @@
                             size="small"
                             v-model="
                                 dataTableStore.configTableColumnsVals[
-                                    `${$route.path}__${column.key}__${row.key}`
+                                    `${fetchUrl}__${column.key}__${row.key}`
                                 ]
                             "
                             :disabled="row.key === undefined"
@@ -60,7 +60,7 @@
                             size="small"
                             v-model="
                                 dataTableStore.configTableColumnsVals[
-                                    `${$route.path}__${column.key}__${row.key}`
+                                    `${fetchUrl}__${column.key}__${row.key}`
                                 ]
                             "
                         >
@@ -80,7 +80,7 @@
                             size="small"
                             v-model="
                                 dataTableStore.configTableColumnsVals[
-                                    `${$route.path}__${column.key}__${row.key}`
+                                    `${fetchUrl}__${column.key}__${row.key}`
                                 ]
                             "
                         >
@@ -109,13 +109,15 @@
 </template>
 <script setup>
 const dataTableStore = useDataTableStore();
-const fetchData = inject("fetchData", {});
-const query = inject("query", {});
-// const fetchList = inject("fetchList", () => {});
+const parentFetch = inject("parentFetch", {});
+const fetchUrl = computed(() => {
+    return parentFetch.url;
+});
+const fetchData = inject("fetchData", ref({}));
 
 // 表格数据
 const tableData = computed(() => {
-    return fetchData.value.columns.filter((column) => {
+    return fetchData.value.columns?.filter((column) => {
         // 只显示有 key 的列
         return column.key;
     });

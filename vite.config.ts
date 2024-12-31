@@ -2,8 +2,8 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-08-26 19:52:34
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-29 17:26:59
- * @FilePath: \vueAdmin\vite.config.ts
+ * @LastEditTime: 2024-10-15 14:08:06
+ * @FilePath: \ProPayAdmin\vite.config.ts
  * @Description:
  *
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved.
@@ -18,6 +18,9 @@ import vue from "@vitejs/plugin-vue";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    server: {
+        host: "0.0.0.0",
+    },
     plugins: [
         vue(),
         Unocss(),

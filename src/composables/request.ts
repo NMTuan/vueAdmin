@@ -2,8 +2,8 @@
  * @Author: nmtuan nmtuan@qq.com
  * @Date: 2024-06-18 15:56:57
  * @LastEditors: nmtuan nmtuan@qq.com
- * @LastEditTime: 2024-08-29 16:33:22
- * @FilePath: \vueAdmin\src\composables\request.ts
+ * @LastEditTime: 2024-11-02 19:50:57
+ * @FilePath: \ProPayc:\project\vueAdmin\src\composables\request.ts
  * @Description:
  *
  * Copyright (c) 2024 by nmtuan@qq.com, All Rights Reserved.
@@ -55,36 +55,47 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
     (response) => {
         // 如果返回信息有message, 则显示
-        if (response.data.message && !response.headers.mute) {
-            ElMessage[response.data.code === 200 ? "success" : "error"]({
-                message: response.data.message,
-                // description: response.data.description || ''
-            });
-            // notification[response.data.code === 200 ? 'success' : 'error']({
-            //   message: response.data.message,
-            //   description: response.data.description || ''
-            // })
+        if (response.data.message) {
+            if (response.data.showType === "alert") {
+                ElMessageBox.alert(
+                    response.data.message,
+                    response.data.title || "提示",
+                    {
+                        dangerouslyUseHTMLString: true,
+                    }
+                );
+            } else {
+                ElMessage[response.data.code === 200 ? "success" : "error"]({
+                    dangerouslyUseHTMLString: true,
+                    message: response.data.message,
+                    // description: response.data.description || ''
+                });
+            }
         }
         return response;
     },
     (error) => {
-        console.log("mute", error.response.headers.mute);
-        if (error.response && !error.response.headers.mute) {
-            const err = errors[error.response.status];
-            if (err) {
-                ElMessage.error(err.message);
-                // notification.error(err)
-            } else {
-                ElMessage.error(
-                    `Status:${error.response.status}，未知错误，请联系管理员！`
-                );
-                // notification.error({
-                //   message: '未知错误',
-                //   description: `Status:${error.response.status}，未知错误，请联系管理员！`
-                // })
-            }
+        let code = error.code || "";
+        let status = error.status || "";
+        let message = error.message || "";
+
+        if (error.response) {
+            status = error.response.status || status;
+            message = error.response.statusText || message;
         }
-        return Promise.reject(error.response);
+
+        if (error.response && error.response.data) {
+            status = error.response.data.statusCode || status;
+            message =
+                error.response.data.message ||
+                error.response.data.statusMessage ||
+                message;
+        }
+
+        ElMessage.error(
+            `${status} ${code}: ${message || "未知错误，请联系管理员！"}`
+        );
+        return Promise.reject(error);
     }
 );
 
@@ -105,39 +116,39 @@ const get = async (path = "", params = {}, config = {}) => {
     });
 };
 
-const execGet = async (path = "", params = {}, config = {}) => {
-    const loading = ref(false);
-    const data = ref({});
-    const execute = async () => {
-        loading.value = true;
-        data.value = await new Promise((resolve, reject) => {
-            axios({
-                url: path,
-                method: "get",
-                params,
-                ...config,
-            })
-                .then((res) => {
-                    resolve(res.data);
-                })
-                .catch((err) => {
-                    reject(err);
-                })
-                .finally(() => {
-                    loading.value = false;
-                });
-        });
-    };
+// const execGet = async (path = "", params = {}, config = {}) => {
+//     const loading = ref(false);
+//     const data = ref({});
+//     const execute = async () => {
+//         loading.value = true;
+//         data.value = await new Promise((resolve, reject) => {
+//             axios({
+//                 url: path,
+//                 method: "get",
+//                 params,
+//                 ...config,
+//             })
+//                 .then((res) => {
+//                     resolve(res.data);
+//                 })
+//                 .catch((err) => {
+//                     reject(err);
+//                 })
+//                 .finally(() => {
+//                     loading.value = false;
+//                 });
+//         });
+//     };
 
-    return { data, loading, execute };
-};
+//     return { data, loading, execute };
+// };
 
-const post = async (path = "", params = {}, config = {}) => {
+const post = async (path = "", data = {}, config = {}) => {
     return await new Promise((resolve, reject) => {
         axios({
             url: path,
             method: "post",
-            data: params,
+            data: data,
             ...config,
         })
             .then((res) => {
@@ -149,34 +160,34 @@ const post = async (path = "", params = {}, config = {}) => {
     });
 };
 
-const execPost = async (path = "", params = {}, config = {}) => {
-    const loading = ref(false);
-    const data = ref({});
-    const execute = async () => {
-        data.value = await new Promise((resolve, reject) => {
-            axios({
-                url: path,
-                method: "post",
-                data: params,
-                ...config,
-            })
-                .then((res) => {
-                    resolve(res.data);
-                })
-                .catch((err) => {
-                    reject(err);
-                })
-                .finally(() => {
-                    loading.value = false;
-                });
-        });
-    };
-    return { data, loading, execute };
-};
+// const execPost = async (path = "", params = {}, config = {}) => {
+//     const loading = ref(false);
+//     const data = ref({});
+//     const execute = async () => {
+//         data.value = await new Promise((resolve, reject) => {
+//             axios({
+//                 url: path,
+//                 method: "post",
+//                 data: params,
+//                 ...config,
+//             })
+//                 .then((res) => {
+//                     resolve(res.data);
+//                 })
+//                 .catch((err) => {
+//                     reject(err);
+//                 })
+//                 .finally(() => {
+//                     loading.value = false;
+//                 });
+//         });
+//     };
+//     return { data, loading, execute };
+// };
 
 export default {
     get,
-    execGet,
+    // execGet,
     post,
-    execPost
+    // execPost
 };
